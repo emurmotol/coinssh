@@ -2,7 +2,7 @@ development:
   dialect: postgres
   database: coinssh_development
   user: postgres
-  password: postgres
+  password: root
   host: 127.0.0.1
   pool: 5
 
