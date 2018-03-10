@@ -54,12 +54,12 @@ func App() *buffalo.App {
 		}
 		app.Use(T.Middleware())
 
-		app.GET("/", HomeHandler)
+		app.GET("/", Home)
 
 		admin := app.Group("/admin")
 		admin.GET("/login", AdminGetLogin)
 		admin.POST("/login", AdminPostLogin)
-		admin.GET("/dashboard", DashboardIndex)
+		admin.GET("/dashboard", AdminDashboard)
 		admin.Resource("/users", UsersResource{})
 
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
