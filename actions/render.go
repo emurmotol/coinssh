@@ -8,10 +8,13 @@ import (
 var r *render.Engine
 var assetsBox = packr.NewBox("../public")
 
+const AdminLayout = "admin/layout/admin.html"
+const ApplicationLayout = "application.html"
+
 func init() {
 	r = render.New(render.Options{
 		// HTML layout to be used for all HTML requests:
-		HTMLLayout: "admin/layouts/application.html",
+		HTMLLayout: ApplicationLayout,
 
 		// Box containing all of the templates:
 		TemplatesBox: packr.NewBox("../templates"),

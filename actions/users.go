@@ -47,7 +47,9 @@ func (v UsersResource) List(c buffalo.Context) error {
 	// Add the paginator to the context so it can be used in the template.
 	c.Set("pagination", q.Paginator)
 
-	return c.Render(200, r.Auto(c, users))
+	c.Set("users", users)
+
+	return c.Render(200, r.HTML("admin/users/index.html", AdminLayout))
 }
 
 // Show gets the data for one User. This function is mapped to
@@ -67,13 +69,17 @@ func (v UsersResource) Show(c buffalo.Context) error {
 		return c.Error(404, err)
 	}
 
-	return c.Render(200, r.Auto(c, user))
+	c.Set("user", user)
+
+	return c.Render(200, r.HTML("admin/users/show.html", AdminLayout))
 }
 
 // New renders the form for creating a new User.
 // This function is mapped to the path GET /users/new
 func (v UsersResource) New(c buffalo.Context) error {
-	return c.Render(200, r.Auto(c, &models.User{}))
+	c.Set("user", &models.User{})
+
+	return c.Render(200, r.HTML("admin/users/new.html", AdminLayout))
 }
 
 // Create adds a User to the DB. This function is mapped to the
@@ -99,13 +105,15 @@ func (v UsersResource) Create(c buffalo.Context) error {
 		return errors.WithStack(err)
 	}
 
+	c.Set("user", user)
+
 	if verrs.HasAny() {
 		// Make the errors available inside the html template
 		c.Set("errors", verrs)
 
 		// Render again the new.html template that the user can
 		// correct the input.
-		return c.Render(422, r.Auto(c, user))
+		return c.Render(422, r.HTML("admin/users/new.html", AdminLayout))
 	}
 
 	// If there are no errors set a success message
@@ -131,7 +139,9 @@ func (v UsersResource) Edit(c buffalo.Context) error {
 		return c.Error(404, err)
 	}
 
-	return c.Render(200, r.Auto(c, user))
+	c.Set("user", user)
+
+	return c.Render(200, r.HTML("admin/users/edit.html", AdminLayout))
 }
 
 // Update changes a User in the DB. This function is mapped to
@@ -160,13 +170,15 @@ func (v UsersResource) Update(c buffalo.Context) error {
 		return errors.WithStack(err)
 	}
 
+	c.Set("user", user)
+
 	if verrs.HasAny() {
 		// Make the errors available inside the html template
 		c.Set("errors", verrs)
 
 		// Render again the edit.html template that the user can
 		// correct the input.
-		return c.Render(422, r.Auto(c, user))
+		return c.Render(422, r.HTML("admin/users/edit.html", AdminLayout))
 	}
 
 	// If there are no errors set a success message

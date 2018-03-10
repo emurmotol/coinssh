@@ -11,9 +11,9 @@
     <title>Buffalo - Coinssh</title>
     <meta name="csrf-param" content="authenticity_token"/>
     <meta name="csrf-token" content="<%= authenticity_token %>"/>
-    <link rel="icon" href="<%= assetPath("images/favicon.ico") %>">
+    <link rel="icon" href="<%= assetPath("images/admin.ico") %>">
 
-    <%= stylesheetTag("application.css") %>
+    <%= stylesheetTag("admin.css") %>
 </head>
 
 <body class="fixed-nav sticky-footer bg-dark" id="page-top">
@@ -24,13 +24,13 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarResponsive">
-        <%= partial("admin/layouts/sidenav.html") %>
+        <%= partial("admin/layout/sidenav.html") %>
         <ul class="navbar-nav ml-auto">
             <li class="nav-item dropdown">
-                <%= partial("admin/layouts/messages.html") %>
+                <%= partial("admin/layout/messages.html") %>
             </li>
             <li class="nav-item dropdown">
-                <%= partial("admin/layouts/alerts.html") %>
+                <%= partial("admin/layout/alerts.html") %>
             </li>
             <li class="nav-item">
                 <form class="form-inline my-2 my-lg-0 mr-lg-2">
@@ -54,11 +54,11 @@
 </nav>
 <div class="content-wrapper">
     <div class="container-fluid">
-        <%= partial("admin/layouts/flash.html") %>
+        <%= partial("admin/layout/flash.html") %>
         <%= yield %>
     </div>
     <!-- /.container-fluid-->
-    <%= partial("admin/layouts/footer.html") %>
+    <%= partial("admin/layout/footer.html") %>
 
     <!-- Logout Modal-->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -79,7 +79,7 @@
         </div>
     </div>
 
-    <%= javascriptTag("application.js") %>
+    <%= javascriptTag("admin.js") %>
 </div>
 </body>
 </html>
