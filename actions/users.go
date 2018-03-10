@@ -120,7 +120,7 @@ func (v UsersResource) Create(c buffalo.Context) error {
 	c.Flash().Add("success", "User was created successfully")
 
 	// and redirect to the users index page
-	return c.Render(201, r.Auto(c, user))
+	return c.Redirect(302, "/admin/users")
 }
 
 // Edit renders a edit form for a User. This function is
@@ -185,7 +185,7 @@ func (v UsersResource) Update(c buffalo.Context) error {
 	c.Flash().Add("success", "User was updated successfully")
 
 	// and redirect to the users index page
-	return c.Render(200, r.Auto(c, user))
+	return c.Redirect(302, "/admin/users")
 }
 
 // Destroy deletes a User from the DB. This function is mapped
@@ -213,5 +213,5 @@ func (v UsersResource) Destroy(c buffalo.Context) error {
 	c.Flash().Add("success", "User was destroyed successfully")
 
 	// Redirect to the users index page
-	return c.Render(200, r.Auto(c, user))
+	return c.Redirect(302, "/admin/users")
 }

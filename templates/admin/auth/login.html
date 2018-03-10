@@ -1,0 +1,5 @@
+<%= form_for(loginRequest, {action: adminLoginPath(), method: "POST"}) { %>
+    <%= f.InputTag("Email") %>
+    <%= f.InputTag("Password") %>
+    <button class="btn btn-success" role="submit">Login</button>
+<% } %>

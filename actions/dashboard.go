@@ -1,6 +1,8 @@
 package actions
 
-import "github.com/gobuffalo/buffalo"
+import (
+	"github.com/gobuffalo/buffalo"
+)
 
 // DashboardIndex default implementation.
 func DashboardIndex(c buffalo.Context) error {

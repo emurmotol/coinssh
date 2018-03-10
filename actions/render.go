@@ -8,8 +8,9 @@ import (
 var r *render.Engine
 var assetsBox = packr.NewBox("../public")
 
-const AdminLayout = "admin/layout/admin.html"
 const ApplicationLayout = "application.html"
+const AdminLayout = "admin/layout/admin.html"
+const AdminAuthLayout = "admin/auth/layout/auth.html"
 
 func init() {
 	r = render.New(render.Options{

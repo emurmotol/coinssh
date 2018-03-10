@@ -2,7 +2,7 @@
   <h1>Users</h1>
 </div>
 <ul class="list-unstyled list-inline">
-  <li><a href="<%= newUsersPath() %>" class="btn btn-primary">Create New User</a></li>
+  <li><a href="<%= newAdminUsersPath() %>" class="btn btn-primary">Create New User</a></li>
 </ul>
 
 <table class="table table-striped">
@@ -20,9 +20,9 @@
         <td><%= user.Password %></td>
         <td>
           <div class="pull-right">
-            <a href="<%= userPath({ user_id: user.ID }) %>" class="btn btn-info">View</a>
-            <a href="<%= editUserPath({ user_id: user.ID }) %>" class="btn btn-warning">Edit</a>
-            <a href="<%= userPath({ user_id: user.ID }) %>" data-method="DELETE" data-confirm="Are you sure?" class="btn btn-danger">Destroy</a>
+            <a href="<%= adminUserPath({ user_id: user.ID }) %>" class="btn btn-info">View</a>
+            <a href="<%= editAdminUserPath({ user_id: user.ID }) %>" class="btn btn-warning">Edit</a>
+            <a href="<%= adminUserPath({ user_id: user.ID }) %>" data-method="DELETE" data-confirm="Are you sure?" class="btn btn-danger">Destroy</a>
           </div>
         </td>
       </tr>

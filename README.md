@@ -32,3 +32,17 @@ We recommend you heading over to [http://gobuffalo.io](http://gobuffalo.io) and 
 Good luck!
 
 [Powered by Buffalo](http://gobuffalo.io)
+
+## Debug
+
+Run:
+
+buffalo build -t -gcflags="-N" && dlv --listen=:2345 --headless=true --api-version=2 exec bin\coinssh.exe
+
+Then:
+
+Click Debug on GoLand
+
+Reference:
+
+https://blog.gobuffalo.io/debugging-a-buffalo-app-in-gogland-b9a00e8076b8
