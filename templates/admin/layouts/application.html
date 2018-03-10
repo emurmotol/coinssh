@@ -24,13 +24,13 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarResponsive">
-        <%= partial("layouts/sidenav.html") %>
+        <%= partial("admin/layouts/sidenav.html") %>
         <ul class="navbar-nav ml-auto">
             <li class="nav-item dropdown">
-                <%= partial("layouts/messages.html") %>
+                <%= partial("admin/layouts/messages.html") %>
             </li>
             <li class="nav-item dropdown">
-                <%= partial("layouts/alerts.html") %>
+                <%= partial("admin/layouts/alerts.html") %>
             </li>
             <li class="nav-item">
                 <form class="form-inline my-2 my-lg-0 mr-lg-2">
@@ -54,11 +54,11 @@
 </nav>
 <div class="content-wrapper">
     <div class="container-fluid">
-        <%= partial("layouts/flash.html") %>
+        <%= partial("admin/layouts/flash.html") %>
         <%= yield %>
     </div>
     <!-- /.container-fluid-->
-    <%= partial("layouts/footer.html") %>
+    <%= partial("admin/layouts/footer.html") %>
 
     <!-- Logout Modal-->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
