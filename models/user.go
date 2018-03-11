@@ -8,7 +8,6 @@ import (
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
-	"golang.org/x/crypto/bcrypt"
 	"github.com/pkg/errors"
 )
 
@@ -60,12 +59,13 @@ func (u *User) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
 }
 
 func (u *User) BeforeCreate(tx *pop.Connection) error {
-	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+	password, err := encryptPassword(u.Password)
+
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
-	u.Password = string(hash)
+	u.Password = password
 
 	return nil
 }

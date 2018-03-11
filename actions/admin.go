@@ -5,12 +5,12 @@ import (
 	"github.com/gobuffalo/pop"
 	"github.com/emurmotol/coinssh/models"
 	"github.com/pkg/errors"
-	"golang.org/x/crypto/bcrypt"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 	"os"
 	"io/ioutil"
+	"net/http"
 )
 
 type LoginRequest struct {
@@ -22,7 +22,7 @@ type LoginRequest struct {
 func AdminGetLogin(c buffalo.Context) error {
 	c.Set("loginRequest", &LoginRequest{})
 
-	return c.Render(200, r.HTML("admin/auth/login.html", AdminAuthLayout))
+	return c.Render(http.StatusOK, r.HTML("admin/auth/login.html", AdminAuthLayout))
 }
 
 func AdminPostLogin(c buffalo.Context) error {
@@ -45,10 +45,7 @@ func AdminPostLogin(c buffalo.Context) error {
 		return errors.WithStack(err)
 	}
 
-	hash := []byte(user.Password)
-	password := []byte(req.Password)
-
-	if err := bcrypt.CompareHashAndPassword(hash, password); err != nil {
+	if err := comparePassword(user.Password, req.Password); err != nil {
 		return errors.WithStack(err)
 	}
 
@@ -74,5 +71,5 @@ func AdminPostLogin(c buffalo.Context) error {
 	c.Set("user", user)
 	c.Set("token", tokenString)
 
-	return c.Render(200, r.HTML("admin/auth/ok.html", AdminAuthLayout))
+	return c.Render(http.StatusOK, r.HTML("admin/auth/ok.html", AdminAuthLayout))
 }
