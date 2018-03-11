@@ -8,10 +8,14 @@ import (
 var r *render.Engine
 var assetsBox = packr.NewBox("../public")
 
+const ApplicationLayout = "application.html"
+const AdminLayout = "admin/layout/admin.html"
+const AdminAuthLayout = "admin/auth/layout/auth.html"
+
 func init() {
 	r = render.New(render.Options{
 		// HTML layout to be used for all HTML requests:
-		HTMLLayout: "application.html",
+		HTMLLayout: ApplicationLayout,
 
 		// Box containing all of the templates:
 		TemplatesBox: packr.NewBox("../templates"),
@@ -19,9 +23,9 @@ func init() {
 
 		// Add template helpers here:
 		Helpers: render.Helpers{
-		// uncomment for non-Bootstrap form helpers:
-		// "form":     plush.FormHelper,
-		// "form_for": plush.FormForHelper,
+			// uncomment for non-Bootstrap form helpers:
+			// "form":     plush.FormHelper,
+			// "form_for": plush.FormForHelper,
 		},
 	})
 }
