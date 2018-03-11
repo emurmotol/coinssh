@@ -55,10 +55,11 @@ func App() *buffalo.App {
 		app.Use(T.Middleware())
 
 		app.GET("/", GetHome)
+		app.GET("/routes", GetRoutes)
 
 		admin := app.Group("/admin")
 		admin.Use(AdminMiddleware)
-		admin.Middleware.Skip(AdminMiddleware, GetAdminLogin, PostAdminLogin)
+		admin.Middleware.Skip(AdminMiddleware, GetAdminLogin, PostAdminLogin, GetAdminLogout)
 		admin.GET("/login", GetAdminLogin)
 		admin.POST("/login", PostAdminLogin)
 		admin.GET("/logout", GetAdminLogout)

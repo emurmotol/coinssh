@@ -31,48 +31,53 @@ func AdminMiddleware(next buffalo.Handler) buffalo.Handler {
 			return emptySessionTokenErr
 		}
 
-		// parsing token
+		// Parsing token
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 			}
 
-			// key
+			// RSA key
 			mySignedKey, err := ioutil.ReadFile(os.Getenv("ADMIN_JWT_KEY_PATH"))
 
 			if err != nil {
-				return nil, fmt.Errorf("could not open jwt key, %v", err)
+				return nil, fmt.Errorf("Could not open jwt key: %v", err)
 			}
 
 			return mySignedKey, nil
 		})
 
+		// Token expired
 		if err != nil {
-			return c.Error(http.StatusUnauthorized, fmt.Errorf("Could not parse the token, %v", err))
+			if c.Request().Header.Get("X-Requested-With") == "xmlhttprequest" {
+				return c.Error(http.StatusUnauthorized, fmt.Errorf("Could not parse the token: %v", err))
+			}
+
+			return c.Redirect(http.StatusFound, "/admin/logout")
 		}
 
-		// getting claims
+		// Getting claims
 		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 
-			logrus.Errorf("claims: %v", claims)
+			logrus.Errorf("Claims: %v", claims)
 
 			// Get the DB connection from the context
 			tx, ok := c.Value("tx").(*pop.Connection)
 
 			if !ok {
-				return c.Error(http.StatusInternalServerError, fmt.Errorf("no transaction found"))
+				return c.Error(http.StatusInternalServerError, fmt.Errorf("No transaction found"))
 			}
 
 			// Allocate an empty User
 			user := &models.User{}
 
-			// retrieving user from db
+			// Retrieving user from db
 			if err := tx.Find(user, claims["jti"].(string)); err != nil {
 				return c.Error(http.StatusNotFound, err)
 			}
 
 			if err != nil {
-				return c.Error(http.StatusUnauthorized, fmt.Errorf("Could not identify the user"))
+				return c.Error(http.StatusUnauthorized, fmt.Errorf("Could not identify the user: %v", err))
 			}
 
 			c.Set("user", user)
