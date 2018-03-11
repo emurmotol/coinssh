@@ -10,16 +10,22 @@ import (
 	"io/ioutil"
 	"github.com/gobuffalo/pop"
 	"github.com/emurmotol/coinssh/models"
-	"github.com/pkg/errors"
 )
 
 func AdminMiddleware(next buffalo.Handler) buffalo.Handler {
 	return func(c buffalo.Context) error {
 
-		tokenString := c.Request().Header.Get("Authorization")
+		sessionToken := c.Session().Get(AdminTokenName)
+		emptyTokenErr := c.Error(http.StatusUnauthorized, fmt.Errorf("No token set in session"))
+
+		if sessionToken == nil {
+			return emptyTokenErr
+		}
+
+		tokenString := c.Session().Get(AdminTokenName).(string)
 
 		if len(tokenString) == 0 {
-			return c.Error(http.StatusUnauthorized, fmt.Errorf("No token set in headers"))
+			return emptyTokenErr
 		}
 
 		// parsing token
@@ -51,7 +57,7 @@ func AdminMiddleware(next buffalo.Handler) buffalo.Handler {
 			tx, ok := c.Value("tx").(*pop.Connection)
 
 			if !ok {
-				return errors.WithStack(errors.New("no transaction found"))
+				return c.Error(http.StatusInternalServerError, fmt.Errorf("no transaction found"))
 			}
 
 			// Allocate an empty User

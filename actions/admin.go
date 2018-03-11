@@ -13,6 +13,8 @@ import (
 	"net/http"
 )
 
+const AdminTokenName = "_admin_token"
+
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -68,8 +70,7 @@ func AdminPostLogin(c buffalo.Context) error {
 		return errors.WithStack(err)
 	}
 
-	c.Set("user", user)
-	c.Set("token", tokenString)
+	c.Session().Set(AdminTokenName, tokenString)
 
-	return c.Render(http.StatusOK, r.HTML("admin/auth/ok.html", AdminAuthLayout))
+	return c.Redirect(http.StatusFound, "/admin/dashboard")
 }
