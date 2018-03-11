@@ -54,8 +54,10 @@ func App() *buffalo.App {
 		}
 		app.Use(T.Middleware())
 
-		app.GET("/", GetHome)
 		app.GET("/routes", GetRoutes)
+
+		web := app.Group("/")
+		web.GET("/", GetHome)
 
 		admin := app.Group("/admin")
 		admin.Use(AdminMiddleware)
