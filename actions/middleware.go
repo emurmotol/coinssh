@@ -15,17 +15,14 @@ import (
 func AdminMiddleware(next buffalo.Handler) buffalo.Handler {
 	return func(c buffalo.Context) error {
 
-		sessionToken := c.Session().Get(AdminTokenName)
-		emptyTokenErr := c.Error(http.StatusUnauthorized, fmt.Errorf("No token set in session"))
-
-		if sessionToken == nil {
-			return emptyTokenErr
+		if !AdminIsLoggedIn(c.Session()) {
+			return c.Redirect(http.StatusFound, "/admin/login")
 		}
 
 		tokenString := c.Session().Get(AdminTokenName).(string)
 
 		if len(tokenString) == 0 {
-			return emptyTokenErr
+			return c.Error(http.StatusUnauthorized, fmt.Errorf("No token set in session"))
 		}
 
 		// parsing token

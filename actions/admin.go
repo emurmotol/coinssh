@@ -20,14 +20,18 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
-// AdminLogin default implementation.
-func AdminGetLogin(c buffalo.Context) error {
+// GetAdminLogin default implementation.
+func GetAdminLogin(c buffalo.Context) error {
+	if AdminIsLoggedIn(c.Session()) {
+		return c.Redirect(http.StatusFound, "/admin/dashboard")
+	}
+
 	c.Set("loginRequest", &LoginRequest{})
 
 	return c.Render(http.StatusOK, r.HTML("admin/auth/login.html", AdminAuthLayout))
 }
 
-func AdminPostLogin(c buffalo.Context) error {
+func PostAdminLogin(c buffalo.Context) error {
 	tx, ok := c.Value("tx").(*pop.Connection)
 
 	if !ok {
@@ -73,4 +77,27 @@ func AdminPostLogin(c buffalo.Context) error {
 	c.Session().Set(AdminTokenName, tokenString)
 
 	return c.Redirect(http.StatusFound, "/admin/dashboard")
+}
+
+func GetAdminLogout(c buffalo.Context) error {
+	c.Session().Delete(AdminTokenName)
+	c.Session().Clear()
+
+	return c.Redirect(http.StatusFound, "/admin/login")
+}
+
+func AdminIsLoggedIn(s *buffalo.Session) bool {
+	sessionToken := s.Get(AdminTokenName)
+
+	if sessionToken == nil {
+		return false
+	}
+
+	tokenString := s.Get(AdminTokenName).(string)
+
+	if len(tokenString) == 0 {
+		return false
+	}
+
+	return true
 }

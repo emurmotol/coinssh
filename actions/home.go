@@ -7,6 +7,6 @@ import (
 
 // HomeHandler is a default handler to serve up
 // a home page.
-func Home(c buffalo.Context) error {
+func GetHome(c buffalo.Context) error {
 	return c.Render(http.StatusOK, r.HTML("index.html"))
 }
