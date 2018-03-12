@@ -212,6 +212,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/manveru/faker"
+  packages = ["."]
+  revision = "9fbc68a78c4dbc7914e1a23f88f126bea4383b97"
+
+[[projects]]
+  branch = "master"
   name = "github.com/markbates/going"
   packages = [
     "defaults",
@@ -508,6 +514,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "87f89cd2fa6b6463232e5cc99f90854e20e52421072753241fad17bb82593338"
+  inputs-digest = "186e514ad0ab5dbfb9e11f8f25e465fec2eaab7d4755fd438049cff1634b4c10"
   solver-name = "gps-cdcl"
   solver-version = 1
