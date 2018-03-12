@@ -6,6 +6,10 @@
 
 `buffalo db migrate`
 
+### Seeding
+
+`buffalo task db:seed`
+
 ### RSA Key (JWT)
 
 `ssh-keygen -t rsa -b 4096 -f rsa/jwtRS256.key`
