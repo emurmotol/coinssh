@@ -1,22 +1,22 @@
-## Database
+### Database
 
 `buffalo db create -a`
 
-## Migration
+### Migration
 
 `buffalo db migrate`
 
-## RSA Key (JWT)
+### RSA Key (JWT)
 
 `ssh-keygen -t rsa -b 4096 -f rsa/jwtRS256.key`
 
-## Dependency
+### Dependency
 
 `dep ensure`
 
 `yarn install`
 
-## Debugging
+### Debugging
 
 `buffalo build -t -gcflags="-N" && dlv --listen=:2345 --headless=true --api-version=2 exec bin\coinssh.exe`
 
