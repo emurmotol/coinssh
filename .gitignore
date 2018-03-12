@@ -12,3 +12,4 @@ coinssh
 .vscode/
 .grifter/
 .env
+rsa/admin/

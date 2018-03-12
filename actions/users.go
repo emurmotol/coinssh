@@ -31,7 +31,7 @@ func (v UsersResource) List(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
+		return errors.WithStack(errors.New("No transaction found"))
 	}
 
 	users := &models.Users{}
@@ -59,7 +59,7 @@ func (v UsersResource) Show(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
+		return errors.WithStack(errors.New("No transaction found"))
 	}
 
 	// Allocate an empty User
@@ -97,7 +97,7 @@ func (v UsersResource) Create(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
+		return errors.WithStack(errors.New("No transaction found"))
 	}
 
 	// Validate the data from the html form
@@ -130,7 +130,7 @@ func (v UsersResource) Edit(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
+		return errors.WithStack(errors.New("No transaction found"))
 	}
 
 	// Allocate an empty User
@@ -151,7 +151,7 @@ func (v UsersResource) Update(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
+		return errors.WithStack(errors.New("No transaction found"))
 	}
 
 	// Allocate an empty User
@@ -195,7 +195,7 @@ func (v UsersResource) Destroy(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
+		return errors.WithStack(errors.New("No transaction found"))
 	}
 
 	// Allocate an empty User

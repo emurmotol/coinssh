@@ -35,7 +35,7 @@ func PostAdminLogin(c buffalo.Context) error {
 	tx, ok := c.Value("tx").(*pop.Connection)
 
 	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
+		return errors.WithStack(errors.New("No transaction found"))
 	}
 
 	req := &LoginRequest{}
