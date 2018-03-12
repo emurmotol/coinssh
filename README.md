@@ -1,3 +1,7 @@
+### Install
+
+`go get -u -v github.com/gobuffalo/buffalo/buffalo`
+
 ### Dependency
 
 `dep ensure`
