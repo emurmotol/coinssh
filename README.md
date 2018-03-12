@@ -1,3 +1,9 @@
+### Dependency
+
+`dep ensure`
+
+`yarn install`
+
 ### Database
 
 `buffalo db create -a`
@@ -13,12 +19,6 @@
 ### RSA Key (JWT)
 
 `ssh-keygen -t rsa -b 4096 -f rsa/jwtRS256.key`
-
-### Dependency
-
-`dep ensure`
-
-`yarn install`
 
 ### Debugging
 
