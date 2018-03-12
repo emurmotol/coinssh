@@ -58,6 +58,7 @@ func App() *buffalo.App {
 
 		web := app.Group("/")
 		web.GET("/", GetHome)
+		// Must clear middleware after above lines
 
 		admin := app.Group("/admin")
 		admin.Use(AdminMiddleware)
