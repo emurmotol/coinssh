@@ -18,8 +18,8 @@ https://blog.gobuffalo.io/debugging-a-buffalo-app-in-gogland-b9a00e8076b8
 
 Run:
 
-ssh-keygen -t rsa -b 4096 -f rsa/admin/jwtRS256.key
-ssh-keygen -t rsa -b 4096 -f rsa/web/jwtRS256.key
+ssh-keygen -t rsa -b 4096 -f rsa/jwtRS256.key
+ssh-keygen -t rsa -b 4096 -f rsa/jwtRS256.key
 
 ## Dependency
 
