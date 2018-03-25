@@ -11,6 +11,8 @@ var assetsBox = packr.NewBox("../public")
 const ApplicationLayout = "application.html"
 const AdminLayout = "admin/layout/admin.html"
 const AdminAuthLayout = "admin/auth/layout/auth.html"
+const WebLayout = "web/layout/admin.html"
+const WebAuthLayout = "web/auth/layout/auth.html"
 
 func init() {
 	r = render.New(render.Options{

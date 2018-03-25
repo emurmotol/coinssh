@@ -1,8 +1,8 @@
 package models
 
 import (
-	"golang.org/x/crypto/bcrypt"
 	"github.com/pkg/errors"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func encryptPassword(pwd string) (string, error) {

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Auth - Coinssh</title>
+    <meta name="csrf-param" content="authenticity_token"/>
+    <meta name="csrf-token" content="<%= authenticity_token %>"/>
+    <link rel="icon" href="<%= assetPath("images/web.ico") %>">
+
+    <%= partial("web/plugins/styles.html") %>
+
+    <link rel="stylesheet" href="https://cdn.rawgit.com/emurmotol/my-login/master/css/my-login.css">
+
+    <%= stylesheetTag("web.css") %>
+
+    <style>
+        div.invalid-feedback.help-block {
+            font-size: 14px;
+        }
+    </style>
+
+</head>
+
+<body class="my-login-page">
+
+<section class="h-100">
+    <div class="container h-100">
+        <div class="row justify-content-md-center h-100">
+            <div class="card-wrapper">
+                <div class="brand">
+                    <img src="http://placehold.it/144x144">
+                </div>
+                <div class="card fat">
+                    <div class="card-body">
+                        <%= yield %>
+                    </div>
+                </div>
+                <div class="footer">
+                    Copyright &copy; 2018 &mdash; Coinssh
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%= partial("web/plugins/scripts.html") %>
+
+<script type="text/javascript" src="https://cdn.rawgit.com/emurmotol/my-login/master/js/my-login.js"></script>
+
+<%= javascriptTag("web.js") %>
+
+</body>
+
+</html>
+

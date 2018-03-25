@@ -1,44 +1,45 @@
 package actions
 
 import (
-	"github.com/gobuffalo/buffalo"
-	"github.com/gobuffalo/pop"
-	"github.com/emurmotol/coinssh/models"
-	"github.com/pkg/errors"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"time"
-	"os"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/emurmotol/coinssh/models"
+	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/pop"
+	"github.com/pkg/errors"
 )
 
 const AdminTokenName = "_admin_token"
 
-type LoginRequest struct {
+type AdminLoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-// GetAdminLogin default implementation.
-func GetAdminLogin(c buffalo.Context) error {
-	if AdminIsLoggedIn(c.Session()) {
+// AdminGetLogin default implementation.
+func AdminGetLogin(c buffalo.Context) error {
+	if IsUserLoggedIn(c.Session()) {
 		return c.Redirect(http.StatusFound, "/admin/dashboard")
 	}
 
-	c.Set("loginRequest", &LoginRequest{})
+	c.Set("adminLoginRequest", &AdminLoginRequest{})
 
 	return c.Render(http.StatusOK, r.HTML("admin/auth/login.html", AdminAuthLayout))
 }
 
-func PostAdminLogin(c buffalo.Context) error {
+func AdminPostLogin(c buffalo.Context) error {
 	tx, ok := c.Value("tx").(*pop.Connection)
 
 	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
+		return errors.WithStack(errors.New("No transaction found"))
 	}
 
-	req := &LoginRequest{}
+	req := &AdminLoginRequest{}
 
 	if err := c.Bind(req); err != nil {
 		return errors.WithStack(err)
@@ -60,7 +61,7 @@ func PostAdminLogin(c buffalo.Context) error {
 		Id:        user.ID.String(),
 	}
 
-	signingKey, err := ioutil.ReadFile(os.Getenv("ADMIN_JWT_KEY_PATH"))
+	signingKey, err := ioutil.ReadFile(os.Getenv("JWT_KEY_PATH"))
 
 	if err != nil {
 		return errors.WithStack(err)
@@ -79,14 +80,14 @@ func PostAdminLogin(c buffalo.Context) error {
 	return c.Redirect(http.StatusFound, "/admin/dashboard")
 }
 
-func GetAdminLogout(c buffalo.Context) error {
+func AdminGetLogout(c buffalo.Context) error {
 	c.Session().Delete(AdminTokenName)
 	c.Session().Clear()
 
 	return c.Redirect(http.StatusFound, "/admin/login")
 }
 
-func AdminIsLoggedIn(s *buffalo.Session) bool {
+func IsUserLoggedIn(s *buffalo.Session) bool {
 	sessionToken := s.Get(AdminTokenName)
 
 	if sessionToken == nil {
@@ -100,4 +101,9 @@ func AdminIsLoggedIn(s *buffalo.Session) bool {
 	}
 
 	return true
+}
+
+// AdminGetDashboard default implementation.
+func AdminGetDashboard(c buffalo.Context) error {
+	return c.Render(http.StatusOK, r.HTML("admin/dashboard/index.html", AdminLayout))
 }

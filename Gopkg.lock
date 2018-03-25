@@ -32,6 +32,12 @@
   version = "1.0.0"
 
 [[projects]]
+  name = "github.com/dgrijalva/jwt-go"
+  packages = ["."]
+  revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
+  version = "v3.2.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/dustin/go-humanize"
   packages = ["."]
@@ -66,6 +72,7 @@
   packages = [
     ".",
     "binding",
+    "mail",
     "middleware",
     "middleware/csrf",
     "middleware/i18n",
@@ -203,6 +210,12 @@
     "oid"
   ]
   revision = "88edab0803230a3898347e77b474f8c1820a1f20"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/manveru/faker"
+  packages = ["."]
+  revision = "9fbc68a78c4dbc7914e1a23f88f126bea4383b97"
 
 [[projects]]
   branch = "master"
@@ -494,6 +507,18 @@
   revision = "7dca6fe1f43775aa6d1334576870ff63f978f539"
 
 [[projects]]
+  branch = "v3"
+  name = "gopkg.in/alexcesaro/quotedprintable.v3"
+  packages = ["."]
+  revision = "2caba252f4dc53eaf6b553000885530023f54623"
+
+[[projects]]
+  name = "gopkg.in/mail.v2"
+  packages = ["."]
+  revision = "63235f23494bf20d713a585bce40b2a0675c2f77"
+  version = "2.2.0"
+
+[[projects]]
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   revision = "7f97868eec74b32b0982dd158a51a446d1da7eb5"
@@ -502,6 +527,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a7649cd5b5e6510e8d08b052acccfad0b7e35f53af84cfa16863dcd522872631"
+  inputs-digest = "45a67b8c24a595dfb11688752b826eb236da89809787b1e906521e9479d1ebb7"
   solver-name = "gps-cdcl"
   solver-version = 1
