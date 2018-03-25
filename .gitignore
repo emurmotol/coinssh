@@ -14,3 +14,4 @@ coinssh
 .env
 jwtRS256.key
 jwtRS256.key.pub
+yarn-error.log

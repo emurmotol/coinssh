@@ -12,9 +12,9 @@
     <meta name="csrf-token" content="<%= authenticity_token %>"/>
     <link rel="icon" href="<%= assetPath("images/admin.ico") %>">
 
-    <!-- <%= stylesheetTag("admin.css") %> -->
-
     <%= partial("plugins/styles.html") %>
+
+    <%= stylesheetTag("admin.css") %>
 
 </head>
 
@@ -65,9 +65,9 @@
     <%= partial("admin/layout/footer.html") %>
 </div>
 
-<!-- <%= javascriptTag("admin.js") %> -->
-
 <%= partial("plugins/scripts.html") %>
+
+<%= javascriptTag("admin.js") %>
 
 <script>
     $(function () {
