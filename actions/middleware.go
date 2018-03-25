@@ -38,7 +38,7 @@ func AdminMiddleware(next buffalo.Handler) buffalo.Handler {
 			}
 
 			// RSA key
-			mySignedKey, err := ioutil.ReadFile(os.Getenv("ADMIN_JWT_KEY_PATH"))
+			mySignedKey, err := ioutil.ReadFile(os.Getenv("JWT_KEY_PATH"))
 
 			if err != nil {
 				return nil, fmt.Errorf("Could not open jwt key: %v", err)

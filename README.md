@@ -22,7 +22,7 @@
 
 ### RSA Key (JWT)
 
-`ssh-keygen -t rsa -b 4096 -f rsa/jwtRS256.key`
+`ssh-keygen -t rsa -b 4096 -f jwtRS256.key`
 
 ### Debugging
 

@@ -60,7 +60,7 @@ func PostAdminLogin(c buffalo.Context) error {
 		Id:        user.ID.String(),
 	}
 
-	signingKey, err := ioutil.ReadFile(os.Getenv("ADMIN_JWT_KEY_PATH"))
+	signingKey, err := ioutil.ReadFile(os.Getenv("JWT_KEY_PATH"))
 
 	if err != nil {
 		return errors.WithStack(err)

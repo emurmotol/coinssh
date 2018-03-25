@@ -12,4 +12,5 @@ coinssh
 .vscode/
 .grifter/
 .env
-rsa/
+jwtRS256.key
+jwtRS256.key.pub
