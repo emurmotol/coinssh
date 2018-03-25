@@ -8,7 +8,7 @@ import (
 
 func AdminMiddleware(next buffalo.Handler) buffalo.Handler {
 	return func(c buffalo.Context) error {
-		model, err := authenticated(AdminTokenName, c)
+		model, err := authenticated(c, AdminTokenName)
 
 		if err != nil {
 			if c.Request().Header.Get("X-Requested-With") == "xmlhttprequest" {
@@ -27,7 +27,7 @@ func AdminMiddleware(next buffalo.Handler) buffalo.Handler {
 
 func WebMiddleware(next buffalo.Handler) buffalo.Handler {
 	return func(c buffalo.Context) error {
-		model, err := authenticated(WebTokenName, c)
+		model, err := authenticated(c, WebTokenName)
 
 		if err != nil {
 			if c.Request().Header.Get("X-Requested-With") == "xmlhttprequest" {
