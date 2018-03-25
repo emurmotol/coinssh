@@ -27,4 +27,3 @@ func (as *ActionSuite) Test_UsersResource_Update() {
 func (as *ActionSuite) Test_UsersResource_Destroy() {
 	as.Fail("Not Implemented!")
 }
-

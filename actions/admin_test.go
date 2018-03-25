@@ -1,17 +1,17 @@
 package actions
 
-func (as *ActionSuite) Test_Get_Admin_Login() {
+func (as *ActionSuite) Test_Admin_GetLogin() {
 	as.Fail("Not Implemented!")
 }
 
-func (as *ActionSuite) Test_Post_Admin_Login() {
+func (as *ActionSuite) Test_Admin_PostLogin() {
 	as.Fail("Not Implemented!")
 }
 
-func (as *ActionSuite) Test_Get_Admin_Logout() {
+func (as *ActionSuite) Test_Admin_GetLogout() {
 	as.Fail("Not Implemented!")
 }
 
-func (as *ActionSuite) Test_Admin_Is_Logged_In() {
+func (as *ActionSuite) Test_AdminIsLoggedIn() {
 	as.Fail("Not Implemented!")
 }

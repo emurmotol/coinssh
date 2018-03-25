@@ -1,7 +1,7 @@
 <div class="card card-login mx-auto mt-5">
     <div class="card-header text-center">Coinssh</div>
     <div class="card-body">
-        <%= form_for(loginRequest, {action: adminLoginPath(), method: "POST"}) { %>
+        <%= form_for(adminLoginRequest, {action: adminLoginPath(), method: "POST"}) { %>
         <%= f.InputTag("Email") %>
         <%= f.InputTag("Password", {type: "password"}) %>
         <button type="submit" class="btn btn-success btn-block" role="button">Login</button>

@@ -1,5 +1,5 @@
 package actions
 
-func (as *ActionSuite) Test_Get_Admin_Dashboard() {
+func (as *ActionSuite) Test_Admin_GetDashboard() {
 	as.Fail("Not Implemented!")
 }

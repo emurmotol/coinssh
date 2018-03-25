@@ -1,15 +1,16 @@
 package actions
 
 import (
-	"github.com/gobuffalo/buffalo"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/sirupsen/logrus"
-	"net/http"
 	"fmt"
-	"os"
 	"io/ioutil"
-	"github.com/gobuffalo/pop"
+	"net/http"
+	"os"
+
+	"github.com/dgrijalva/jwt-go"
 	"github.com/emurmotol/coinssh/models"
+	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/pop"
+	"github.com/sirupsen/logrus"
 )
 
 func AdminMiddleware(next buffalo.Handler) buffalo.Handler {

@@ -1,9 +1,9 @@
 package grifts
 
 import (
-	"github.com/markbates/grift/grift"
-	"github.com/manveru/faker"
 	"github.com/emurmotol/coinssh/models"
+	"github.com/manveru/faker"
+	"github.com/markbates/grift/grift"
 	"github.com/pkg/errors"
 )
 
@@ -12,8 +12,8 @@ var _ = grift.Namespace("db", func() {
 	grift.Add("seed:admin", func(c *grift.Context) error {
 
 		admin := &models.User{
-			Name: "Administrator",
-			Email: "su@coinssh.com",
+			Name:     "Administrator",
+			Email:    "su@coinssh.com",
 			Password: "su@coinssh.com",
 		}
 
@@ -29,8 +29,8 @@ var _ = grift.Namespace("db", func() {
 
 		for i := 0; i <= 20; i++ {
 			user := &models.User{
-				Name: fake.Name(),
-				Email: fake.Email(),
+				Name:     fake.Name(),
+				Email:    fake.Email(),
 				Password: "secret123",
 			}
 

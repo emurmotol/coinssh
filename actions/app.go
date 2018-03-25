@@ -57,16 +57,20 @@ func App() *buffalo.App {
 		app.GET("/routes", GetRoutes)
 
 		web := app.Group("/")
-		web.GET("/", GetHome)
+		web.GET("/", WebGetHome)
+		web.GET("/login", WebGetLogin)
+		web.POST("/login", WebPostLogin)
+		web.GET("/logout", WebGetLogout)
+		web.GET("/dashboard", WebGetDashboard)
 		// Must clear middleware after above lines
 
 		admin := app.Group("/admin")
 		admin.Use(AdminMiddleware)
-		admin.Middleware.Skip(AdminMiddleware, GetAdminLogin, PostAdminLogin, GetAdminLogout)
-		admin.GET("/login", GetAdminLogin)
-		admin.POST("/login", PostAdminLogin)
-		admin.GET("/logout", GetAdminLogout)
-		admin.GET("/dashboard", GetAdminDashboard)
+		admin.Middleware.Skip(AdminMiddleware, AdminGetLogin, AdminPostLogin, AdminGetLogout)
+		admin.GET("/login", AdminGetLogin)
+		admin.POST("/login", AdminPostLogin)
+		admin.GET("/logout", AdminGetLogout)
+		admin.GET("/dashboard", AdminGetDashboard)
 		admin.Resource("/users", UsersResource{})
 
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
