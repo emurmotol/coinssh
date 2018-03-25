@@ -12,7 +12,7 @@
     <meta name="csrf-token" content="<%= authenticity_token %>"/>
     <link rel="icon" href="<%= assetPath("images/admin.ico") %>">
 
-    <%= partial("plugins/styles.html") %>
+    <%= partial("admin/plugins/styles.html") %>
 
     <%= stylesheetTag("admin.css") %>
 
@@ -25,7 +25,7 @@
     <%= yield %>
 </div>
 
-<%= partial("plugins/scripts.html") %>
+<%= partial("admin/plugins/scripts.html") %>
 
 <%= javascriptTag("admin.js") %>
 

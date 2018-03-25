@@ -15,6 +15,10 @@ var entries = {
         './node_modules/jquery-ujs/src/rails.js',
         './assets/admin/css/admin.scss',
     ],
+    web: [
+        './node_modules/jquery-ujs/src/rails.js',
+        './assets/web/css/web.scss',
+    ],
 };
 
 glob.sync("./assets/application/*/*.*").reduce((_, entry) => {
@@ -33,6 +37,20 @@ glob.sync("./assets/application/*/*.*").reduce((_, entry) => {
 
 glob.sync("./assets/admin/*/*.*").reduce((_, entry) => {
     let key = entry.replace(/(\.\/assets\/admin\/(js|css|go)\/)|\.(js|s[ac]ss|go)/g, '');
+    if (key.startsWith("_") || (/(js|s[ac]ss|go)$/i).test(entry) == false) {
+        return
+    }
+
+    if (entries[key] == null) {
+        entries[key] = [entry];
+        return
+    }
+
+    entries[key].push(entry);
+});
+
+glob.sync("./assets/web/*/*.*").reduce((_, entry) => {
+    let key = entry.replace(/(\.\/assets\/web\/(js|css|go)\/)|\.(js|s[ac]ss|go)/g, '');
     if (key.startsWith("_") || (/(js|s[ac]ss|go)$/i).test(entry) == false) {
         return
     }
@@ -68,6 +86,9 @@ module.exports = {
                 to: ""
             }, {
                 from: "./assets/application",
+                to: ""
+            }, {
+                from: "./assets/web",
                 to: ""
             }], {
                 copyUnmodified: true,
