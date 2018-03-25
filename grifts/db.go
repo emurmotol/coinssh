@@ -42,6 +42,28 @@ var _ = grift.Namespace("db", func() {
 		return nil
 	})
 
+	grift.Add("seed:accounts", func(c *grift.Context) error {
+		fake, err := faker.New("en")
+
+		if err != nil {
+			return err
+		}
+
+		for i := 0; i <= 20; i++ {
+			account := &models.Account{
+				Name:     fake.Name(),
+				Email:    fake.Email(),
+				Password: "secret123",
+			}
+
+			if err := models.DB.Create(account); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+
 	grift.Add("seed", func(c *grift.Context) error {
 
 		if err := models.DB.TruncateAll(); err != nil {
@@ -53,6 +75,10 @@ var _ = grift.Namespace("db", func() {
 		}
 
 		if err := grift.Run("db:seed:users", c); err != nil {
+			return errors.WithStack(err)
+		}
+
+		if err := grift.Run("db:seed:accounts", c); err != nil {
 			return errors.WithStack(err)
 		}
 

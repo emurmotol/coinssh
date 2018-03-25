@@ -58,11 +58,14 @@ func App() *buffalo.App {
 
 		web := app.Group("/")
 		web.GET("/", WebGetHome)
+		web.Use(WebMiddleware)
+		web.Middleware.Skip(WebMiddleware, WebGetLogin, WebPostLogin, WebGetLogout)
 		web.GET("/login", WebGetLogin)
 		web.POST("/login", WebPostLogin)
 		web.GET("/logout", WebGetLogout)
 		web.GET("/dashboard", WebGetDashboard)
-		// Must clear middleware after above lines
+		web.Resource("/accounts", AccountsResource{})
+		// Test if must clear middleware after above lines
 
 		admin := app.Group("/admin")
 		admin.Use(AdminMiddleware)

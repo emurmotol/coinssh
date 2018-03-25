@@ -23,7 +23,7 @@ type AdminLoginRequest struct {
 
 // AdminGetLogin default implementation.
 func AdminGetLogin(c buffalo.Context) error {
-	if AdminIsLoggedIn(c.Session()) {
+	if IsUserLoggedIn(c.Session()) {
 		return c.Redirect(http.StatusFound, "/admin/dashboard")
 	}
 
@@ -87,7 +87,7 @@ func AdminGetLogout(c buffalo.Context) error {
 	return c.Redirect(http.StatusFound, "/admin/login")
 }
 
-func AdminIsLoggedIn(s *buffalo.Session) bool {
+func IsUserLoggedIn(s *buffalo.Session) bool {
 	sessionToken := s.Get(AdminTokenName)
 
 	if sessionToken == nil {
@@ -101,4 +101,9 @@ func AdminIsLoggedIn(s *buffalo.Session) bool {
 	}
 
 	return true
+}
+
+// AdminGetDashboard default implementation.
+func AdminGetDashboard(c buffalo.Context) error {
+	return c.Render(http.StatusOK, r.HTML("admin/dashboard/index.html", AdminLayout))
 }
