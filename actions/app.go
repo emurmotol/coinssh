@@ -57,10 +57,10 @@ func App() *buffalo.App {
 		app.GET("/routes", GetRoutes)
 
 		web := app.Group("/")
-		web.GET("/", WebGetHome)
 		web.Use(WebMiddleware)
 		aR := AccountsResource{}
-		web.Middleware.Skip(WebMiddleware, WebGetLogin, WebPostLogin, WebGetLogout, WebGetRegister, aR.Create)
+		web.Middleware.Skip(WebMiddleware, WebGetHome, WebGetLogin, WebPostLogin, WebGetLogout, WebGetRegister, aR.Create)
+		web.GET("/", WebGetHome)
 		web.GET("/login", WebGetLogin)
 		web.POST("/login", WebPostLogin)
 		web.GET("/logout", WebGetLogout)
