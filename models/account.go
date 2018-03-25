@@ -8,6 +8,7 @@ import (
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
+	"github.com/pkg/errors"
 )
 
 type Account struct {
@@ -54,4 +55,16 @@ func (a *Account) ValidateCreate(tx *pop.Connection) (*validate.Errors, error) {
 // This method is not required and may be deleted.
 func (a *Account) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.NewErrors(), nil
+}
+
+func (a *Account) BeforeCreate(tx *pop.Connection) error {
+	password, err := encryptPassword(a.Password)
+
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	a.Password = password
+
+	return nil
 }
