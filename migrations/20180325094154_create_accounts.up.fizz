@@ -4,5 +4,4 @@ create_table("accounts", func(t) {
 	})
 	t.Column("name", "string", {})
 	t.Column("email", "string", {})
-	t.Column("password", "string", {})
 })

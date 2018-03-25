@@ -1,10 +1,9 @@
 package mailers
 
 import (
+	"github.com/emurmotol/coinssh/models"
 	"github.com/gobuffalo/buffalo/mail"
 	"github.com/gobuffalo/buffalo/render"
-	"github.com/pkg/errors"
-	"github.com/emurmotol/coinssh/models"
 )
 
 func SendRegisterActivation(a *models.Account) error {
@@ -18,7 +17,11 @@ func SendRegisterActivation(a *models.Account) error {
 		"account": a,
 	})
 	if err != nil {
-		return errors.WithStack(err)
+		panic(err) // Must recover from this
 	}
-	return smtp.Send(m)
+
+	if err := smtp.Send(m); err != nil {
+		panic(err) // Must recover from this
+	}
+	return nil
 }

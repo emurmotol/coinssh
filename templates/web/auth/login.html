@@ -1,5 +1,15 @@
 <h4 class="card-title">Login</h4>
-<%= form_for(webLoginRequest, {action: loginPath(), method: "POST"}) { %>
+<%= if (errors) { %>
+<%= for (key, val) in errors { %>
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <%= val %>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<% } %>
+<% } %>
+<%= form_for(account, {action: loginPath(), method: "POST"}) { %>
 <%= f.InputTag("Email", {class: "form-control-lg", autofocus: true}) %>
 <%= f.InputTag("Password", {type: "password", class: "form-control-lg"}) %>
     <div class="form-group">
