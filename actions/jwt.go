@@ -30,7 +30,7 @@ func makeToken(id string) (string, error) {
 	return token.SignedString(signingKey)
 }
 
-func authenticated(tokenName string, c buffalo.Context) (interface{}, error) {
+func authenticated(c buffalo.Context, tokenName string) (interface{}, error) {
 	sessionToken := c.Session().Get(tokenName)
 	emptyTokenErr := fmt.Errorf("No token set in session")
 
