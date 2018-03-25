@@ -7,21 +7,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Buffalo - Coinssh</title>
+    <title>Login - Coinssh</title>
     <meta name="csrf-param" content="authenticity_token"/>
     <meta name="csrf-token" content="<%= authenticity_token %>"/>
     <link rel="icon" href="<%= assetPath("images/admin.ico") %>">
 
-    <%= stylesheetTag("admin.css") %>
+    <!-- <%= stylesheetTag("admin.css") %> -->
+
+    <%= partial("plugins/styles.html") %>
+
 </head>
 
 <body class="bg-dark">
+
 <div class="container">
     <%= partial("admin/layout/flash.html") %>
     <%= yield %>
 </div>
 
-<%= javascriptTag("admin.js") %>
+<!-- <%= javascriptTag("admin.js") %> -->
+
+<%= partial("plugins/scripts.html") %>
+
 </body>
 
 </html>
