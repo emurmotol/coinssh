@@ -72,6 +72,7 @@
   packages = [
     ".",
     "binding",
+    "mail",
     "middleware",
     "middleware/csrf",
     "middleware/i18n",
@@ -506,6 +507,18 @@
   revision = "7dca6fe1f43775aa6d1334576870ff63f978f539"
 
 [[projects]]
+  branch = "v3"
+  name = "gopkg.in/alexcesaro/quotedprintable.v3"
+  packages = ["."]
+  revision = "2caba252f4dc53eaf6b553000885530023f54623"
+
+[[projects]]
+  name = "gopkg.in/mail.v2"
+  packages = ["."]
+  revision = "63235f23494bf20d713a585bce40b2a0675c2f77"
+  version = "2.2.0"
+
+[[projects]]
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   revision = "7f97868eec74b32b0982dd158a51a446d1da7eb5"
@@ -514,6 +527,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "36924775761a99e92b8732b5e7eb0454b6560b944e38450911fab28f0d8ea38b"
+  inputs-digest = "45a67b8c24a595dfb11688752b826eb236da89809787b1e906521e9479d1ebb7"
   solver-name = "gps-cdcl"
   solver-version = 1

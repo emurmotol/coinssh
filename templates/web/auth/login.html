@@ -1,7 +1,7 @@
 <h4 class="card-title">Login</h4>
 <%= form_for(webLoginRequest, {action: loginPath(), method: "POST"}) { %>
 <%= f.InputTag("Email", {class: "form-control-lg", autofocus: true}) %>
-<%= f.InputTag("Password", {type: "password", class: "form-control-lg", data-eye: true}) %>
+<%= f.InputTag("Password", {type: "password", class: "form-control-lg"}) %>
     <div class="form-group">
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" name="remember" id="web-login-request-RememberMe">
@@ -13,6 +13,6 @@
         <button type="submit" class="btn btn-primary btn-lg btn-block" role="button">Login</button>
     </div>
     <div class="margin-top20 text-center">
-        Don't have an account? <a href="register.html">Create One</a>
+        Don't have an account? <a href="<%= registerPath() %>">Create One</a>
     </div>
 <% } %>

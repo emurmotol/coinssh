@@ -19,3 +19,7 @@ func (as *ActionSuite) Test_Web_GetHome() {
 func (as *ActionSuite) Test_Web_GetDashboard() {
 	as.Fail("Not Implemented!")
 }
+
+func (as *ActionSuite) Test_Web_GetRegister() {
+	as.Fail("Not Implemented!")
+}

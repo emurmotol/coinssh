@@ -40,7 +40,7 @@ func (a Accounts) String() string {
 func (a *Account) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.Validate(
 		&validators.StringIsPresent{Field: a.Name, Name: "Name"},
-		&validators.StringIsPresent{Field: a.Email, Name: "Email"},
+		&validators.EmailIsPresent{Field: a.Email, Name: "Email"},
 		&validators.StringIsPresent{Field: a.Password, Name: "Password"},
 	), nil
 }

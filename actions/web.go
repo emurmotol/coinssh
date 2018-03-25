@@ -115,3 +115,14 @@ func IsAccountLoggedIn(s *buffalo.Session) bool {
 
 	return true
 }
+
+// WebGetRegister default implementation.
+func WebGetRegister(c buffalo.Context) error {
+	if IsAccountLoggedIn(c.Session()) {
+		return c.Redirect(http.StatusFound, "/dashboard")
+	}
+
+	c.Set("account", &models.Account{})
+
+	return c.Render(http.StatusOK, r.HTML("web/auth/register.html", WebAuthLayout))
+}
