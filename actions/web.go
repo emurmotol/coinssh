@@ -37,25 +37,23 @@ func WebPostLogin(c buffalo.Context) error {
 		return errors.WithStack(err)
 	}
 	c.Set("account", account)
-	back := c.Render(http.StatusUnprocessableEntity, r.HTML("web/auth/login.html", WebAuthLayout))
 
 	vErrs := validate.NewErrors()
 	errKey := "loginErrors"
-	req := c.Value("request").(*http.Request)
 
-	isHuman, err := external.IsHuman(req)
+	isHuman, err := external.IsHuman(c.Request())
 
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
 	if !isHuman {
-		vErrs.Add(errKey, "!OK")
+		vErrs.Add(errKey, "Please verify you are a human.")
 	}
 
 	if vErrs.HasAny() {
 		c.Set(errKey, vErrs.Errors)
-		return back
+		return c.Render(http.StatusUnprocessableEntity, r.HTML("web/auth/login.html", WebAuthLayout))
 	}
 
 	vErrs, err = account.ValidateLogin(tx)
@@ -66,7 +64,7 @@ func WebPostLogin(c buffalo.Context) error {
 
 	if vErrs.HasAny() {
 		c.Set("errors", vErrs.Errors)
-		return back
+		return c.Render(http.StatusUnprocessableEntity, r.HTML("web/auth/login.html", WebAuthLayout))
 	}
 
 	if err := account.Authorize(tx); err != nil {
@@ -75,7 +73,7 @@ func WebPostLogin(c buffalo.Context) error {
 
 	if vErrs.HasAny() {
 		c.Set(errKey, vErrs.Errors)
-		return back
+		return c.Render(http.StatusUnprocessableEntity, r.HTML("web/auth/login.html", WebAuthLayout))
 	}
 	tokenString, err := makeToken(account.ID.String())
 
