@@ -8,6 +8,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/emurmotol/coinssh/mailers"
 	"fmt"
+	"github.com/gobuffalo/validate"
+	"github.com/emurmotol/coinssh/external"
 )
 
 // WebGetLogin default implementation.
@@ -34,26 +36,46 @@ func WebPostLogin(c buffalo.Context) error {
 	if err := c.Bind(account); err != nil {
 		return errors.WithStack(err)
 	}
+	c.Set("account", account)
+	back := c.Render(http.StatusUnprocessableEntity, r.HTML("web/auth/login.html", WebAuthLayout))
 
-	verrs, err := account.ValidateLogin(tx)
+	vErrs := validate.NewErrors()
+	errKey := "loginErrors"
+	req := c.Value("request").(*http.Request)
+
+	isHuman, err := external.IsHuman(req)
 
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	c.Set("account", account)
 
-	if verrs.HasAny() {
-		c.Set("errors", verrs.Errors)
-		return c.Render(http.StatusUnprocessableEntity, r.HTML("web/auth/login.html", WebAuthLayout))
+	if !isHuman {
+		vErrs.Add(errKey, "!OK")
+	}
+
+	if vErrs.HasAny() {
+		c.Set(errKey, vErrs.Errors)
+		return back
+	}
+
+	vErrs, err = account.ValidateLogin(tx)
+
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	if vErrs.HasAny() {
+		c.Set("errors", vErrs.Errors)
+		return back
 	}
 
 	if err := account.Authorize(tx); err != nil {
-		verrs.Add("loginErrors", err.Error())
+		vErrs.Add(errKey, err.Error())
 	}
 
-	if verrs.HasAny() {
-		c.Set("loginErrors", verrs.Errors)
-		return c.Render(http.StatusUnprocessableEntity, r.HTML("web/auth/login.html", WebAuthLayout))
+	if vErrs.HasAny() {
+		c.Set(errKey, vErrs.Errors)
+		return back
 	}
 	tokenString, err := makeToken(account.ID.String())
 

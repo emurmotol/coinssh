@@ -4,13 +4,13 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"time"
 	"io/ioutil"
-	"os"
 	"github.com/pkg/errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/gobuffalo/pop"
 	"github.com/emurmotol/coinssh/models"
 	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/envy"
 )
 
 func makeToken(id string) (string, error) {
@@ -19,7 +19,7 @@ func makeToken(id string) (string, error) {
 		Id:        id,
 	}
 
-	signingKey, err := ioutil.ReadFile(os.Getenv("JWT_KEY_PATH"))
+	signingKey, err := ioutil.ReadFile(envy.Get("JWT_KEY_PATH", ""))
 
 	if err != nil {
 		return "", errors.WithStack(err)
@@ -50,7 +50,7 @@ func authenticated(c buffalo.Context, tokenName string) (interface{}, error) {
 		}
 
 		// RSA key
-		mySignedKey, err := ioutil.ReadFile(os.Getenv("JWT_KEY_PATH"))
+		mySignedKey, err := ioutil.ReadFile(envy.Get("JWT_KEY_PATH", ""))
 
 		if err != nil {
 			return nil, fmt.Errorf("Could not open jwt key: %v", err)

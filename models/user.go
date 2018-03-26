@@ -12,7 +12,7 @@ import (
 	"strings"
 	"database/sql"
 	"golang.org/x/crypto/bcrypt"
-	"fmt"
+	"github.com/emurmotol/coinssh/external"
 )
 
 type User struct {
@@ -125,8 +125,9 @@ type UserEmailIsDisposable struct {
 }
 
 func (v *UserEmailIsDisposable) IsValid(errors *validate.Errors) {
-	kb := &kickbox{}
-	getJson(fmt.Sprintf("https://open.kickbox.com/v1/disposable/%s", v.Field), kb)
+	kb := &external.KickBox{}
+	url := strings.Join([]string{external.KickBoxApiUrl, v.Field}, "")
+	external.GetJson(url, kb)
 
 	if kb.IsDisposable {
 		errors.Add(validators.GenerateKey(v.Name), "Disposable email address are not allowed.")

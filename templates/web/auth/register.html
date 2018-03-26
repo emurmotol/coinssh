@@ -4,16 +4,11 @@
 <%= f.InputTag("Email", {class: "form-control-lg"}) %>
 <%= f.InputTag("Password", {type: "password", class: "form-control-lg"}) %>
 <div class="form-group">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" name="IAgree" id="account-IAgree">
-        <label class="custom-control-label" for="account-IAgree"> I agree to the Terms and Conditions</label>
-    </div>
+    <div class="g-recaptcha" data-sitekey='<%= env("RECAPTCHA_SITE_KEY", "") %>' align="center"></div>
 </div>
-
 <div class="form-group no-margin">
     <button type="submit" class="btn btn-primary btn-lg btn-block" role="button">Register</button>
 </div>
-
 <div class="margin-top20 text-center">
     Already have an account? <a href="<%= loginPath() %>">Login</a>
 </div>

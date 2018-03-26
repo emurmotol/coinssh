@@ -13,7 +13,7 @@ import (
 	"github.com/gobuffalo/validate/validators"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
-	"fmt"
+	"github.com/emurmotol/coinssh/external"
 )
 
 type Account struct {
@@ -83,8 +83,9 @@ type AccountEmailIsDisposable struct {
 }
 
 func (v *AccountEmailIsDisposable) IsValid(errors *validate.Errors) {
-	kb := &kickbox{}
-	getJson(fmt.Sprintf("https://open.kickbox.com/v1/disposable/%s", v.Field), kb)
+	kb := &external.KickBox{}
+	url := strings.Join([]string{external.KickBoxApiUrl, v.Field}, "")
+	external.GetJson(url, kb)
 
 	if kb.IsDisposable {
 		errors.Add(validators.GenerateKey(v.Name), "Disposable email address are not allowed.")
