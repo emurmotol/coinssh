@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/emurmotol/coinssh/mailers"
 	"github.com/gobuffalo/validate"
+	"fmt"
 )
 
 const WebTokenName = "_web_token"
@@ -131,7 +132,7 @@ func WebPostRegister(c buffalo.Context) error {
 	go mailers.SendRegisterActivation(account)
 
 	// If there are no errors set a success message
-	c.Flash().Add("success", "Account was created successfully")
+	c.Flash().Add("success", fmt.Sprintf("Hello, %s! We sent you an email. Please activate your account.", account.Name))
 	// and redirect to the home page
 	return c.Redirect(http.StatusFound, "/register")
 }
