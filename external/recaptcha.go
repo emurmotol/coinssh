@@ -30,11 +30,11 @@ func IsHuman(r *http.Request) (bool, error) {
 		"response": {response},
 		"remoteip": {remoteIp},
 	}
-	reCaptcha := &ReCaptcha{}
-	err := PostJson(ReCaptchaApiUrl, data, reCaptcha)
+	rc := &ReCaptcha{}
+	err := PostJson(ReCaptchaApiUrl, data, rc)
 
 	if err != nil {
 		return false, err
 	}
-	return reCaptcha.Success, nil
+	return rc.Success, nil
 }
