@@ -83,11 +83,9 @@ type AccountEmailIsDisposable struct {
 }
 
 func (v *AccountEmailIsDisposable) IsValid(errors *validate.Errors) {
-	kb := &external.KickBox{}
-	url := strings.Join([]string{external.KickBoxApiUrl, v.Field}, "")
-	external.GetJson(url, kb)
+	yes, _ := external.IsEmailDisposable(v.Field)
 
-	if kb.IsDisposable {
+	if yes {
 		errors.Add(validators.GenerateKey(v.Name), "Disposable email address are not allowed.")
 	}
 }
