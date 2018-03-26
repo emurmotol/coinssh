@@ -12,7 +12,7 @@
         <% } %>
         <% } %>
         <%= form_for(user, {action: adminLoginPath(), method: "POST"}) { %>
-        <%= f.InputTag("Email") %>
+        <%= f.InputTag("Email", {autofocus: true}) %>
         <%= f.InputTag("Password", {type: "password"}) %>
         <button type="submit" class="btn btn-success btn-block" role="button">Login</button>
         <% } %>
