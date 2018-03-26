@@ -1,10 +1,10 @@
 package external
 
 import (
-	"net/http"
-	"time"
 	"encoding/json"
+	"net/http"
 	"net/url"
+	"time"
 )
 
 func GetJson(url string, target interface{}) error {

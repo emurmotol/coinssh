@@ -7,13 +7,13 @@ import (
 	"database/sql"
 	"strings"
 
+	"github.com/emurmotol/coinssh/external"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
-	"github.com/emurmotol/coinssh/external"
 )
 
 type Account struct {

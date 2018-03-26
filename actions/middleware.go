@@ -1,9 +1,9 @@
 package actions
 
 import (
-	"net/http"
 	"github.com/emurmotol/coinssh/models"
 	"github.com/gobuffalo/buffalo"
+	"net/http"
 )
 
 func AdminMiddleware(next buffalo.Handler) buffalo.Handler {

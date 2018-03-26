@@ -2,8 +2,8 @@ package actions
 
 import (
 	"github.com/gobuffalo/buffalo/render"
-	"github.com/gobuffalo/packr"
 	"github.com/gobuffalo/envy"
+	"github.com/gobuffalo/packr"
 )
 
 var r *render.Engine

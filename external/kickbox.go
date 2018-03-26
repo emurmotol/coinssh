@@ -8,7 +8,7 @@ type KickBox struct {
 	IsDisposable bool `json:"disposable"`
 }
 
-func IsEmailDisposable(email string) (bool, error)  {
+func IsEmailDisposable(email string) (bool, error) {
 	kb := &KickBox{}
 	url := strings.Join([]string{KickBoxApiUrl, email}, "")
 	err := GetJson(url, kb)

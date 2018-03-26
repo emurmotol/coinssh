@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"time"
 
+	"database/sql"
+	"github.com/emurmotol/coinssh/external"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
 	"github.com/pkg/errors"
-	"strings"
-	"database/sql"
 	"golang.org/x/crypto/bcrypt"
-	"github.com/emurmotol/coinssh/external"
+	"strings"
 )
 
 type User struct {

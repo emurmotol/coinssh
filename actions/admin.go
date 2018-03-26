@@ -1,11 +1,11 @@
 package actions
 
 import (
-	"net/http"
 	"github.com/emurmotol/coinssh/models"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
 	"github.com/pkg/errors"
+	"net/http"
 )
 
 // AdminGetLogin default implementation.

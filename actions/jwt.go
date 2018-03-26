@@ -1,16 +1,16 @@
 package actions
 
 import (
-	"github.com/dgrijalva/jwt-go"
-	"time"
-	"io/ioutil"
-	"github.com/pkg/errors"
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"github.com/gobuffalo/pop"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/emurmotol/coinssh/models"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/envy"
+	"github.com/gobuffalo/pop"
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
+	"io/ioutil"
+	"time"
 )
 
 func makeToken(id string) (string, error) {

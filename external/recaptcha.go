@@ -1,15 +1,15 @@
 package external
 
 import (
-	"time"
 	"github.com/gobuffalo/envy"
 	"net"
-	"net/url"
 	"net/http"
+	"net/url"
+	"time"
 )
 
 const (
-	ReCaptchaApiUrl = "https://www.google.com/recaptcha/api/siteverify"
+	ReCaptchaApiUrl    = "https://www.google.com/recaptcha/api/siteverify"
 	ReCaptchaPostParam = "g-recaptcha-response"
 )
 
@@ -26,7 +26,7 @@ func IsHuman(r *http.Request) (bool, error) {
 	secret := envy.Get("RECAPTCHA_SECRET_KEY", "")
 
 	data := url.Values{
-		"secret": {secret},
+		"secret":   {secret},
 		"response": {response},
 		"remoteip": {remoteIp},
 	}

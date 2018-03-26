@@ -1,15 +1,15 @@
 package actions
 
 import (
-	"net/http"
+	"fmt"
+	"github.com/emurmotol/coinssh/external"
+	"github.com/emurmotol/coinssh/mailers"
 	"github.com/emurmotol/coinssh/models"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
-	"github.com/pkg/errors"
-	"github.com/emurmotol/coinssh/mailers"
-	"fmt"
 	"github.com/gobuffalo/validate"
-	"github.com/emurmotol/coinssh/external"
+	"github.com/pkg/errors"
+	"net/http"
 )
 
 // WebGetLogin default implementation.
