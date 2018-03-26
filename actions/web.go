@@ -11,8 +11,6 @@ import (
 	"fmt"
 )
 
-const WebTokenName = "_web_token"
-
 // WebGetLogin default implementation.
 func WebGetLogin(c buffalo.Context) error {
 	if IsAccountLoggedIn(c.Session()) {

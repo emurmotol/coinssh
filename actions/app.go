@@ -19,6 +19,12 @@ var ENV = envy.Get("GO_ENV", "development")
 var app *buffalo.App
 var T *i18n.Translator
 
+const (
+	WebTokenName = "_web_token"
+	AdminTokenName = "_admin_token"
+	CoinsshSessionName = "_coinssh_session"
+)
+
 // App is where all routes and middleware for buffalo
 // should be defined. This is the nerve center of your
 // application.
@@ -26,7 +32,7 @@ func App() *buffalo.App {
 	if app == nil {
 		app = buffalo.New(buffalo.Options{
 			Env:         ENV,
-			SessionName: "_coinssh_session",
+			SessionName: CoinsshSessionName,
 		})
 		// Automatically redirect to SSL
 		app.Use(ssl.ForceSSL(secure.Options{
@@ -72,12 +78,13 @@ func App() *buffalo.App {
 
 		admin := app.Group("/admin")
 		admin.Use(AdminMiddleware)
+		uR := UsersResource{}
 		admin.Middleware.Skip(AdminMiddleware, AdminGetLogin, AdminPostLogin, AdminGetLogout)
 		admin.GET("/login", AdminGetLogin)
 		admin.POST("/login", AdminPostLogin)
 		admin.GET("/logout", AdminGetLogout)
 		admin.GET("/dashboard", AdminGetDashboard)
-		admin.Resource("/users", UsersResource{})
+		admin.Resource("/users", uR)
 
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}

@@ -9,8 +9,6 @@ import (
 	"github.com/gobuffalo/validate"
 )
 
-const AdminTokenName = "_admin_token"
-
 // AdminGetLogin default implementation.
 func AdminGetLogin(c buffalo.Context) error {
 	if IsUserLoggedIn(c.Session()) {
