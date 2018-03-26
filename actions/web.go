@@ -1,25 +1,14 @@
 package actions
 
 import (
-	"fmt"
-	"io/ioutil"
 	"net/http"
-	"os"
-	"time"
-
-	"github.com/dgrijalva/jwt-go"
 	"github.com/emurmotol/coinssh/models"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
 	"github.com/pkg/errors"
+	"github.com/emurmotol/coinssh/mailers"
+	"fmt"
 )
-
-const WebTokenName = "_web_token"
-
-type WebLoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
 
 // WebGetLogin default implementation.
 func WebGetLogin(c buffalo.Context) error {
@@ -27,7 +16,7 @@ func WebGetLogin(c buffalo.Context) error {
 		return c.Redirect(http.StatusFound, "/dashboard")
 	}
 
-	c.Set("webLoginRequest", &WebLoginRequest{})
+	c.Set("account", &models.Account{})
 
 	return c.Render(http.StatusOK, r.HTML("web/auth/login.html", WebAuthLayout))
 }
@@ -40,37 +29,33 @@ func WebPostLogin(c buffalo.Context) error {
 		return errors.WithStack(errors.New("No transaction found"))
 	}
 
-	req := &WebLoginRequest{}
-
-	if err := c.Bind(req); err != nil {
-		return errors.WithStack(err)
-	}
-
-	q := tx.Where(fmt.Sprintf("email = '%s'", req.Email))
 	account := &models.Account{}
 
-	if err := q.First(account); err != nil {
+	if err := c.Bind(account); err != nil {
 		return errors.WithStack(err)
 	}
 
-	if err := comparePassword(account.Password, req.Password); err != nil {
-		return errors.WithStack(err)
-	}
-
-	claims := jwt.StandardClaims{
-		ExpiresAt: time.Now().Add(7 * 24 * time.Hour).Unix(),
-		Id:        account.ID.String(),
-	}
-
-	signingKey, err := ioutil.ReadFile(os.Getenv("JWT_KEY_PATH"))
+	verrs, err := account.ValidateLogin(tx)
 
 	if err != nil {
 		return errors.WithStack(err)
 	}
+	c.Set("account", account)
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	if verrs.HasAny() {
+		c.Set("errors", verrs.Errors)
+		return c.Render(http.StatusUnprocessableEntity, r.HTML("web/auth/login.html", WebAuthLayout))
+	}
 
-	tokenString, err := token.SignedString(signingKey)
+	if err := account.Authorize(tx); err != nil {
+		verrs.Add("loginErrors", err.Error())
+	}
+
+	if verrs.HasAny() {
+		c.Set("loginErrors", verrs.Errors)
+		return c.Render(http.StatusUnprocessableEntity, r.HTML("web/auth/login.html", WebAuthLayout))
+	}
+	tokenString, err := makeToken(account.ID.String())
 
 	if err != nil {
 		return errors.WithStack(err)
@@ -106,13 +91,11 @@ func IsAccountLoggedIn(s *buffalo.Session) bool {
 	if sessionToken == nil {
 		return false
 	}
-
-	tokenString := s.Get(WebTokenName).(string)
+	tokenString := sessionToken.(string)
 
 	if len(tokenString) == 0 {
 		return false
 	}
-
 	return true
 }
 
@@ -125,4 +108,41 @@ func WebGetRegister(c buffalo.Context) error {
 	c.Set("account", &models.Account{})
 
 	return c.Render(http.StatusOK, r.HTML("web/auth/register.html", WebAuthLayout))
+}
+
+// WebPostRegister default implementation.
+func WebPostRegister(c buffalo.Context) error {
+	tx, ok := c.Value("tx").(*pop.Connection)
+
+	if !ok {
+		return errors.WithStack(errors.New("No transaction found"))
+	}
+
+	// Allocate an empty User
+	account := &models.Account{}
+	// Bind user to the html form elements
+	if err := c.Bind(account); err != nil {
+		return errors.WithStack(err)
+	}
+
+	// Validate the data from the html form
+	verrs, err := tx.ValidateAndCreate(account)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	if verrs.HasAny() {
+		c.Set("account", account)
+		// Make the errors available inside the html template
+		c.Set("errors", verrs.Errors)
+		// Render again the register.html template that the user can
+		// correct the input.
+		return c.Render(http.StatusUnprocessableEntity, r.HTML("web/auth/register.html", WebAuthLayout))
+	}
+	go mailers.SendRegisterActivation(account)
+
+	// If there are no errors set a success message
+	c.Flash().Add("success", fmt.Sprintf("Hello, %s! We sent you an email. Please activate your account.", account.Name))
+	// and redirect to the home page
+	return c.Redirect(http.StatusFound, "/login")
 }

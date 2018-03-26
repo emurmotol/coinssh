@@ -1,12 +1,12 @@
 <h4 class="card-title">Register</h4>
-<%= form_for(account, {action: accountsPath(), method: "POST"}) { %>
+<%= form_for(account, {action: registerPath(), method: "POST"}) { %>
 <%= f.InputTag("Name", {class: "form-control-lg", autofocus: true}) %>
 <%= f.InputTag("Email", {class: "form-control-lg"}) %>
 <%= f.InputTag("Password", {type: "password", class: "form-control-lg"}) %>
 <div class="form-group">
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" name="agree" id="web-register-request-Agree">
-        <label class="custom-control-label" for="web-register-request-Agree"> I agree to the Terms and Conditions</label>
+        <input type="checkbox" class="custom-control-input" name="IAgree" id="account-IAgree">
+        <label class="custom-control-label" for="account-IAgree"> I agree to the Terms and Conditions</label>
     </div>
 </div>
 

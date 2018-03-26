@@ -27,7 +27,7 @@ var _ = grift.Namespace("db", func() {
 			return err
 		}
 
-		for i := 0; i <= 20; i++ {
+		for i := 0; i <= 5; i++ {
 			user := &models.User{
 				Name:     fake.Name(),
 				Email:    fake.Email(),
@@ -49,7 +49,7 @@ var _ = grift.Namespace("db", func() {
 			return err
 		}
 
-		for i := 0; i <= 20; i++ {
+		for i := 0; i <= 5; i++ {
 			account := &models.Account{
 				Name:     fake.Name(),
 				Email:    fake.Email(),

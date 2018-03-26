@@ -1,8 +1,18 @@
 <div class="card card-login mx-auto mt-5">
     <div class="card-header text-center">Coinssh</div>
     <div class="card-body">
-        <%= form_for(adminLoginRequest, {action: adminLoginPath(), method: "POST"}) { %>
-        <%= f.InputTag("Email") %>
+        <%= if (loginErrors) { %>
+        <%= for (key, val) in loginErrors { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= val %>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <% } %>
+        <% } %>
+        <%= form_for(user, {action: adminLoginPath(), method: "POST"}) { %>
+        <%= f.InputTag("Email", {autofocus: true}) %>
         <%= f.InputTag("Password", {type: "password"}) %>
         <button type="submit" class="btn btn-success btn-block" role="button">Login</button>
         <% } %>

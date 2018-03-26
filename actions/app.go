@@ -19,6 +19,12 @@ var ENV = envy.Get("GO_ENV", "development")
 var app *buffalo.App
 var T *i18n.Translator
 
+const (
+	WebTokenName = "_web_token"
+	AdminTokenName = "_admin_token"
+	CoinsshSessionName = "_coinssh_session"
+)
+
 // App is where all routes and middleware for buffalo
 // should be defined. This is the nerve center of your
 // application.
@@ -26,7 +32,7 @@ func App() *buffalo.App {
 	if app == nil {
 		app = buffalo.New(buffalo.Options{
 			Env:         ENV,
-			SessionName: "_coinssh_session",
+			SessionName: CoinsshSessionName,
 		})
 		// Automatically redirect to SSL
 		app.Use(ssl.ForceSSL(secure.Options{
@@ -58,20 +64,32 @@ func App() *buffalo.App {
 
 		web := app.Group("/")
 		web.Use(WebMiddleware)
-		aR := AccountsResource{}
-		web.Middleware.Skip(WebMiddleware, WebGetHome, WebGetLogin, WebPostLogin, WebGetLogout, WebGetRegister, aR.Create)
+		web.Middleware.Skip(
+			WebMiddleware,
+			WebGetHome,
+			WebGetLogin,
+			WebPostLogin,
+			WebGetLogout,
+			WebGetRegister,
+			WebPostRegister,
+		)
 		web.GET("/", WebGetHome)
 		web.GET("/login", WebGetLogin)
 		web.POST("/login", WebPostLogin)
 		web.GET("/logout", WebGetLogout)
 		web.GET("/dashboard", WebGetDashboard)
 		web.GET("/register", WebGetRegister)
-		web.Resource("/accounts", aR)
-		// Test if must clear middleware after above lines
+		web.POST("/register", WebPostRegister)
+		web.Resource("/accounts", AccountsResource{})
 
 		admin := app.Group("/admin")
 		admin.Use(AdminMiddleware)
-		admin.Middleware.Skip(AdminMiddleware, AdminGetLogin, AdminPostLogin, AdminGetLogout)
+		admin.Middleware.Skip(
+			AdminMiddleware,
+			AdminGetLogin,
+			AdminPostLogin,
+			AdminGetLogout,
+		)
 		admin.GET("/login", AdminGetLogin)
 		admin.POST("/login", AdminPostLogin)
 		admin.GET("/logout", AdminGetLogout)

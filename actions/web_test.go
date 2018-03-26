@@ -23,3 +23,7 @@ func (as *ActionSuite) Test_Web_GetDashboard() {
 func (as *ActionSuite) Test_Web_GetRegister() {
 	as.Fail("Not Implemented!")
 }
+
+func (as *ActionSuite) Test_Web_PostRegister() {
+	as.Fail("Not Implemented!")
+}

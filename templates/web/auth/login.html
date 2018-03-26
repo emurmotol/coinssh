@@ -1,11 +1,22 @@
 <h4 class="card-title">Login</h4>
-<%= form_for(webLoginRequest, {action: loginPath(), method: "POST"}) { %>
+<%= partial("flash.html") %>
+<%= if (loginErrors) { %>
+<%= for (key, val) in loginErrors { %>
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <%= val %>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<% } %>
+<% } %>
+<%= form_for(account, {action: loginPath(), method: "POST"}) { %>
 <%= f.InputTag("Email", {class: "form-control-lg", autofocus: true}) %>
 <%= f.InputTag("Password", {type: "password", class: "form-control-lg"}) %>
     <div class="form-group">
         <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" name="remember" id="web-login-request-RememberMe">
-            <label class="custom-control-label" for="web-login-request-RememberMe">Remember Me</label>
+            <input type="checkbox" class="custom-control-input" name="remember" id="account-RememberMe">
+            <label class="custom-control-label" for="account-RememberMe">Remember Me</label>
         </div>
     </div>
 
@@ -13,6 +24,6 @@
         <button type="submit" class="btn btn-primary btn-lg btn-block" role="button">Login</button>
     </div>
     <div class="margin-top20 text-center">
-        Don't have an account? <a href="<%= registerPath() %>">Create One</a>
+        Don't have an account? <a href="<%= registerPath() %>">Register</a>
     </div>
 <% } %>

@@ -1,25 +1,12 @@
 package actions
 
 import (
-	"fmt"
-	"io/ioutil"
 	"net/http"
-	"os"
-	"time"
-
-	"github.com/dgrijalva/jwt-go"
 	"github.com/emurmotol/coinssh/models"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
 	"github.com/pkg/errors"
 )
-
-const AdminTokenName = "_admin_token"
-
-type AdminLoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
 
 // AdminGetLogin default implementation.
 func AdminGetLogin(c buffalo.Context) error {
@@ -27,7 +14,7 @@ func AdminGetLogin(c buffalo.Context) error {
 		return c.Redirect(http.StatusFound, "/admin/dashboard")
 	}
 
-	c.Set("adminLoginRequest", &AdminLoginRequest{})
+	c.Set("user", &models.User{})
 
 	return c.Render(http.StatusOK, r.HTML("admin/auth/login.html", AdminAuthLayout))
 }
@@ -39,37 +26,33 @@ func AdminPostLogin(c buffalo.Context) error {
 		return errors.WithStack(errors.New("No transaction found"))
 	}
 
-	req := &AdminLoginRequest{}
-
-	if err := c.Bind(req); err != nil {
-		return errors.WithStack(err)
-	}
-
-	q := tx.Where(fmt.Sprintf("email = '%s'", req.Email))
 	user := &models.User{}
 
-	if err := q.First(user); err != nil {
+	if err := c.Bind(user); err != nil {
 		return errors.WithStack(err)
 	}
 
-	if err := comparePassword(user.Password, req.Password); err != nil {
-		return errors.WithStack(err)
-	}
-
-	claims := jwt.StandardClaims{
-		ExpiresAt: time.Now().Add(7 * 24 * time.Hour).Unix(),
-		Id:        user.ID.String(),
-	}
-
-	signingKey, err := ioutil.ReadFile(os.Getenv("JWT_KEY_PATH"))
+	verrs, err := user.ValidateLogin(tx)
 
 	if err != nil {
 		return errors.WithStack(err)
 	}
+	c.Set("user", user)
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	if verrs.HasAny() {
+		c.Set("errors", verrs.Errors)
+		return c.Render(http.StatusUnprocessableEntity, r.HTML("admin/auth/login.html", AdminAuthLayout))
+	}
 
-	tokenString, err := token.SignedString(signingKey)
+	if err := user.Authorize(tx); err != nil {
+		verrs.Add("loginErrors", err.Error())
+	}
+
+	if verrs.HasAny() {
+		c.Set("loginErrors", verrs.Errors)
+		return c.Render(http.StatusUnprocessableEntity, r.HTML("admin/auth/login.html", AdminAuthLayout))
+	}
+	tokenString, err := makeToken(user.ID.String())
 
 	if err != nil {
 		return errors.WithStack(err)
@@ -93,13 +76,11 @@ func IsUserLoggedIn(s *buffalo.Session) bool {
 	if sessionToken == nil {
 		return false
 	}
-
-	tokenString := s.Get(AdminTokenName).(string)
+	tokenString := sessionToken.(string)
 
 	if len(tokenString) == 0 {
 		return false
 	}
-
 	return true
 }
 

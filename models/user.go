@@ -9,15 +9,20 @@ import (
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
 	"github.com/pkg/errors"
+	"strings"
+	"database/sql"
+	"golang.org/x/crypto/bcrypt"
+	"fmt"
 )
 
 type User struct {
-	ID        uuid.UUID `json:"id" db:"id"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
-	Name      string    `json:"name" db:"name"`
-	Email     string    `json:"email" db:"email"`
-	Password  string    `json:"password" db:"password"`
+	ID           uuid.UUID `json:"id" db:"id"`
+	CreatedAt    time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at" db:"updated_at"`
+	Name         string    `json:"name" db:"name"`
+	Email        string    `json:"email" db:"email"`
+	Password     string    `json:"-" db:"-"`
+	PasswordHash string    `json:"-" db:"password_hash"`
 }
 
 // String is not required by pop and may be deleted
@@ -42,7 +47,32 @@ func (u *User) Validate(tx *pop.Connection) (*validate.Errors, error) {
 		&validators.StringIsPresent{Field: u.Name, Name: "Name"},
 		&validators.EmailIsPresent{Field: u.Email, Name: "Email"},
 		&validators.StringIsPresent{Field: u.Password, Name: "Password"},
+		&UserEmailTaken{Field: u.Email, Name: "Email", tx: tx},
+		&UserEmailIsDisposable{Field: u.Email, Name: "Email", tx: tx},
 	), nil
+}
+
+func (u *User) ValidateLogin(tx *pop.Connection) (*validate.Errors, error) {
+	return validate.Validate(
+		&validators.EmailIsPresent{Field: u.Email, Name: "Email"},
+		&validators.StringIsPresent{Field: u.Password, Name: "Password"},
+	), nil
+}
+
+type UserEmailTaken struct {
+	Field string
+	Name  string
+	tx    *pop.Connection
+}
+
+func (v *UserEmailTaken) IsValid(errors *validate.Errors) {
+	q := v.tx.Where("email = ?", v.Field)
+	m := User{}
+	err := q.First(&m)
+	if err == nil {
+		// found a user with the same email
+		errors.Add(validators.GenerateKey(v.Name), "Email already taken.")
+	}
 }
 
 // ValidateCreate gets run every time you call "pop.ValidateAndCreate" method.
@@ -58,13 +88,47 @@ func (u *User) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
 }
 
 func (u *User) BeforeCreate(tx *pop.Connection) error {
+	u.Email = strings.ToLower(u.Email)
 	password, err := encryptPassword(u.Password)
 
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
-	u.Password = password
+	u.PasswordHash = password
 
 	return nil
+}
+
+func (u *User) Authorize(tx *pop.Connection) error {
+	err := tx.Where("email = ?", strings.ToLower(u.Email)).First(u)
+
+	if err != nil {
+		if errors.Cause(err) == sql.ErrNoRows {
+			// couldn't find a user with that email address
+			return errors.New("Couldn't find your account.")
+		}
+		return errors.WithStack(err)
+	}
+	// confirm that the given password matches the hashed password from the db
+	err = bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(u.Password))
+	if err != nil {
+		return errors.New("Wrong password.")
+	}
+	return nil
+}
+
+type UserEmailIsDisposable struct {
+	Field string
+	Name  string
+	tx    *pop.Connection
+}
+
+func (v *UserEmailIsDisposable) IsValid(errors *validate.Errors) {
+	kb := &kickbox{}
+	getJson(fmt.Sprintf("https://open.kickbox.com/v1/disposable/%s", v.Field), kb)
+
+	if kb.IsDisposable {
+		errors.Add(validators.GenerateKey(v.Name), "Disposable email address are not allowed.")
+	}
 }
