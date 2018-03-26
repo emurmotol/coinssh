@@ -45,7 +45,7 @@ func AdminPostLogin(c buffalo.Context) error {
 	}
 
 	if err := user.Authorize(tx); err != nil {
-		verrs.Add("loginErrors", "Invalid email or password.")
+		verrs.Add("loginErrors", err.Error())
 	}
 
 	if verrs.HasAny() {

@@ -71,7 +71,7 @@ func (v *UserEmailTaken) IsValid(errors *validate.Errors) {
 	err := q.First(&m)
 	if err == nil {
 		// found a user with the same email
-		errors.Add(validators.GenerateKey(v.Name), "A user with that email already exists.")
+		errors.Add(validators.GenerateKey(v.Name), "Email already taken.")
 	}
 }
 
@@ -106,14 +106,14 @@ func (u *User) Authorize(tx *pop.Connection) error {
 	if err != nil {
 		if errors.Cause(err) == sql.ErrNoRows {
 			// couldn't find a user with that email address
-			return errors.New("User not found.")
+			return errors.New("Couldn't find your account.")
 		}
 		return errors.WithStack(err)
 	}
 	// confirm that the given password matches the hashed password from the db
 	err = bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(u.Password))
 	if err != nil {
-		return errors.New("Invalid password.")
+		return errors.New("Wrong password.")
 	}
 	return nil
 }
