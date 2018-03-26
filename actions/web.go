@@ -7,7 +7,6 @@ import (
 	"github.com/gobuffalo/pop"
 	"github.com/pkg/errors"
 	"github.com/emurmotol/coinssh/mailers"
-	"github.com/gobuffalo/validate"
 	"fmt"
 )
 
@@ -36,11 +35,24 @@ func WebPostLogin(c buffalo.Context) error {
 		return errors.WithStack(err)
 	}
 
-	if err := account.Authorize(tx); err != nil {
-		c.Set("account", account)
-		verrs := validate.NewErrors()
-		verrs.Add("Login", "Invalid email or password.")
+	verrs, err := account.ValidateLogin(tx)
+
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	c.Set("account", account)
+
+	if verrs.HasAny() {
 		c.Set("errors", verrs.Errors)
+		return c.Render(http.StatusUnprocessableEntity, r.HTML("web/auth/login.html", WebAuthLayout))
+	}
+
+	if err := account.Authorize(tx); err != nil {
+		verrs.Add("loginErrors", "Invalid email or password.")
+	}
+
+	if verrs.HasAny() {
+		c.Set("loginErrors", verrs.Errors)
 		return c.Render(http.StatusUnprocessableEntity, r.HTML("web/auth/login.html", WebAuthLayout))
 	}
 	tokenString, err := makeToken(account.ID.String())
@@ -132,5 +144,5 @@ func WebPostRegister(c buffalo.Context) error {
 	// If there are no errors set a success message
 	c.Flash().Add("success", fmt.Sprintf("Hello, %s! We sent you an email. Please activate your account.", account.Name))
 	// and redirect to the home page
-	return c.Redirect(http.StatusFound, "/register")
+	return c.Redirect(http.StatusFound, "/login")
 }

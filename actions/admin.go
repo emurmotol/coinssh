@@ -6,7 +6,6 @@ import (
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
 	"github.com/pkg/errors"
-	"github.com/gobuffalo/validate"
 )
 
 // AdminGetLogin default implementation.
@@ -33,11 +32,24 @@ func AdminPostLogin(c buffalo.Context) error {
 		return errors.WithStack(err)
 	}
 
-	if err := user.Authorize(tx); err != nil {
-		c.Set("user", user)
-		verrs := validate.NewErrors()
-		verrs.Add("Login", "Invalid email or password.")
+	verrs, err := user.ValidateLogin(tx)
+
+	if err != nil {
+		return errors.WithStack(err)
+	}
+	c.Set("user", user)
+
+	if verrs.HasAny() {
 		c.Set("errors", verrs.Errors)
+		return c.Render(http.StatusUnprocessableEntity, r.HTML("admin/auth/login.html", AdminAuthLayout))
+	}
+
+	if err := user.Authorize(tx); err != nil {
+		verrs.Add("loginErrors", "Invalid email or password.")
+	}
+
+	if verrs.HasAny() {
+		c.Set("loginErrors", verrs.Errors)
 		return c.Render(http.StatusUnprocessableEntity, r.HTML("admin/auth/login.html", AdminAuthLayout))
 	}
 	tokenString, err := makeToken(user.ID.String())

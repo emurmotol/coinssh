@@ -64,8 +64,15 @@ func App() *buffalo.App {
 
 		web := app.Group("/")
 		web.Use(WebMiddleware)
-		aR := AccountsResource{}
-		web.Middleware.Skip(WebMiddleware, WebGetHome, WebGetLogin, WebPostLogin, WebGetLogout, WebGetRegister, WebPostRegister)
+		web.Middleware.Skip(
+			WebMiddleware,
+			WebGetHome,
+			WebGetLogin,
+			WebPostLogin,
+			WebGetLogout,
+			WebGetRegister,
+			WebPostRegister,
+		)
 		web.GET("/", WebGetHome)
 		web.GET("/login", WebGetLogin)
 		web.POST("/login", WebPostLogin)
@@ -73,18 +80,21 @@ func App() *buffalo.App {
 		web.GET("/dashboard", WebGetDashboard)
 		web.GET("/register", WebGetRegister)
 		web.POST("/register", WebPostRegister)
-		web.Resource("/accounts", aR)
-		// Test if must clear middleware after above lines
+		web.Resource("/accounts", AccountsResource{})
 
 		admin := app.Group("/admin")
 		admin.Use(AdminMiddleware)
-		uR := UsersResource{}
-		admin.Middleware.Skip(AdminMiddleware, AdminGetLogin, AdminPostLogin, AdminGetLogout)
+		admin.Middleware.Skip(
+			AdminMiddleware,
+			AdminGetLogin,
+			AdminPostLogin,
+			AdminGetLogout,
+		)
 		admin.GET("/login", AdminGetLogin)
 		admin.POST("/login", AdminPostLogin)
 		admin.GET("/logout", AdminGetLogout)
 		admin.GET("/dashboard", AdminGetDashboard)
-		admin.Resource("/users", uR)
+		admin.Resource("/users", UsersResource{})
 
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
 	}

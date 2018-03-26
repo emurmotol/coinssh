@@ -12,6 +12,7 @@ import (
 	"strings"
 	"database/sql"
 	"golang.org/x/crypto/bcrypt"
+	"fmt"
 )
 
 type User struct {
@@ -46,17 +47,25 @@ func (u *User) Validate(tx *pop.Connection) (*validate.Errors, error) {
 		&validators.StringIsPresent{Field: u.Name, Name: "Name"},
 		&validators.EmailIsPresent{Field: u.Email, Name: "Email"},
 		&validators.StringIsPresent{Field: u.Password, Name: "Password"},
-		&UserEmailNotTaken{Field: u.Email, Name: "Email", tx: tx},
+		&UserEmailTaken{Field: u.Email, Name: "Email", tx: tx},
+		&UserEmailIsDisposable{Field: u.Email, Name: "Email", tx: tx},
 	), nil
 }
 
-type UserEmailNotTaken struct {
+func (u *User) ValidateLogin(tx *pop.Connection) (*validate.Errors, error) {
+	return validate.Validate(
+		&validators.EmailIsPresent{Field: u.Email, Name: "Email"},
+		&validators.StringIsPresent{Field: u.Password, Name: "Password"},
+	), nil
+}
+
+type UserEmailTaken struct {
 	Field string
 	Name  string
 	tx    *pop.Connection
 }
 
-func (v *UserEmailNotTaken) IsValid(errors *validate.Errors) {
+func (v *UserEmailTaken) IsValid(errors *validate.Errors) {
 	q := v.tx.Where("email = ?", v.Field)
 	m := User{}
 	err := q.First(&m)
@@ -107,4 +116,19 @@ func (u *User) Authorize(tx *pop.Connection) error {
 		return errors.New("Invalid password.")
 	}
 	return nil
+}
+
+type UserEmailIsDisposable struct {
+	Field string
+	Name  string
+	tx    *pop.Connection
+}
+
+func (v *UserEmailIsDisposable) IsValid(errors *validate.Errors) {
+	kb := &kickbox{}
+	getJson(fmt.Sprintf("https://open.kickbox.com/v1/disposable/%s", v.Field), kb)
+
+	if kb.IsDisposable {
+		errors.Add(validators.GenerateKey(v.Name), "Disposable email address are not allowed.")
+	}
 }

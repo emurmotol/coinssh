@@ -13,6 +13,7 @@ import (
 	"github.com/gobuffalo/validate/validators"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
+	"fmt"
 )
 
 type Account struct {
@@ -47,23 +48,46 @@ func (a *Account) Validate(tx *pop.Connection) (*validate.Errors, error) {
 		&validators.StringIsPresent{Field: a.Name, Name: "Name"},
 		&validators.EmailIsPresent{Field: a.Email, Name: "Email"},
 		&validators.StringIsPresent{Field: a.Password, Name: "Password"},
-		&AccountEmailNotTaken{Field: a.Email, Name: "Email", tx: tx},
+		&AccountEmailTaken{Field: a.Email, Name: "Email", tx: tx},
+		&AccountEmailIsDisposable{Field: a.Email, Name: "Email", tx: tx},
 	), nil
 }
 
-type AccountEmailNotTaken struct {
+func (a *Account) ValidateLogin(tx *pop.Connection) (*validate.Errors, error) {
+	return validate.Validate(
+		&validators.EmailIsPresent{Field: a.Email, Name: "Email"},
+		&validators.StringIsPresent{Field: a.Password, Name: "Password"},
+	), nil
+}
+
+type AccountEmailTaken struct {
 	Field string
 	Name  string
 	tx    *pop.Connection
 }
 
-func (v *AccountEmailNotTaken) IsValid(errors *validate.Errors) {
+func (v *AccountEmailTaken) IsValid(errors *validate.Errors) {
 	q := v.tx.Where("email = ?", v.Field)
 	m := Account{}
 	err := q.First(&m)
 	if err == nil {
 		// found a account with the same email
 		errors.Add(validators.GenerateKey(v.Name), "An account with that email already exists.")
+	}
+}
+
+type AccountEmailIsDisposable struct {
+	Field string
+	Name  string
+	tx    *pop.Connection
+}
+
+func (v *AccountEmailIsDisposable) IsValid(errors *validate.Errors) {
+	kb := &kickbox{}
+	getJson(fmt.Sprintf("https://open.kickbox.com/v1/disposable/%s", v.Field), kb)
+
+	if kb.IsDisposable {
+		errors.Add(validators.GenerateKey(v.Name), "Disposable email address are not allowed.")
 	}
 }
 

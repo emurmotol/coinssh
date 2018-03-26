@@ -1,8 +1,8 @@
 <div class="card card-login mx-auto mt-5">
     <div class="card-header text-center">Coinssh</div>
     <div class="card-body">
-        <%= if (errors) { %>
-        <%= for (key, val) in errors { %>
+        <%= if (loginErrors) { %>
+        <%= for (key, val) in loginErrors { %>
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <%= val %>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">

@@ -1,6 +1,7 @@
 <h4 class="card-title">Login</h4>
-<%= if (errors) { %>
-<%= for (key, val) in errors { %>
+<%= partial("flash.html") %>
+<%= if (loginErrors) { %>
+<%= for (key, val) in loginErrors { %>
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
     <%= val %>
     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -23,6 +24,6 @@
         <button type="submit" class="btn btn-primary btn-lg btn-block" role="button">Login</button>
     </div>
     <div class="margin-top20 text-center">
-        Don't have an account? <a href="<%= registerPath() %>">Create One</a>
+        Don't have an account? <a href="<%= registerPath() %>">Register</a>
     </div>
 <% } %>

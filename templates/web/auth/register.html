@@ -1,5 +1,4 @@
 <h4 class="card-title">Register</h4>
-<%= partial("flash.html") %>
 <%= form_for(account, {action: registerPath(), method: "POST"}) { %>
 <%= f.InputTag("Name", {class: "form-control-lg", autofocus: true}) %>
 <%= f.InputTag("Email", {class: "form-control-lg"}) %>
