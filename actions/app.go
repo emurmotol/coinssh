@@ -20,8 +20,8 @@ var app *buffalo.App
 var T *i18n.Translator
 
 const (
-	WebTokenName = "_web_token"
-	AdminTokenName = "_admin_token"
+	WebTokenName       = "_web_token"
+	AdminTokenName     = "_admin_token"
 	CoinsshSessionName = "_coinssh_session"
 )
 

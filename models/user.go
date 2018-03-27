@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"time"
 
+	"database/sql"
+	"github.com/emurmotol/coinssh/external"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
 	"github.com/pkg/errors"
-	"strings"
-	"database/sql"
 	"golang.org/x/crypto/bcrypt"
-	"fmt"
+	"strings"
 )
 
 type User struct {
@@ -125,10 +125,9 @@ type UserEmailIsDisposable struct {
 }
 
 func (v *UserEmailIsDisposable) IsValid(errors *validate.Errors) {
-	kb := &kickbox{}
-	getJson(fmt.Sprintf("https://open.kickbox.com/v1/disposable/%s", v.Field), kb)
+	yes, _ := external.IsEmailDisposable(v.Field)
 
-	if kb.IsDisposable {
+	if yes {
 		errors.Add(validators.GenerateKey(v.Name), "Disposable email address are not allowed.")
 	}
 }

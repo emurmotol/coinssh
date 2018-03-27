@@ -1,11 +1,13 @@
 package actions
 
 import (
-	"net/http"
 	"github.com/emurmotol/coinssh/models"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
 	"github.com/pkg/errors"
+	"net/http"
+	"github.com/gobuffalo/validate"
+	"github.com/emurmotol/coinssh/external"
 )
 
 // AdminGetLogin default implementation.
@@ -23,7 +25,7 @@ func AdminPostLogin(c buffalo.Context) error {
 	tx, ok := c.Value("tx").(*pop.Connection)
 
 	if !ok {
-		return errors.WithStack(errors.New("No transaction found"))
+		return errors.WithStack(errors.New(T.Translate(c, "tx.not.ok")))
 	}
 
 	user := &models.User{}
@@ -31,26 +33,47 @@ func AdminPostLogin(c buffalo.Context) error {
 	if err := c.Bind(user); err != nil {
 		return errors.WithStack(err)
 	}
+	c.Set("user", user)
 
-	verrs, err := user.ValidateLogin(tx)
+	vErrs := validate.NewErrors()
+	errKey := "loginErrors"
+	back := func(key string, with map[string][]string) error {
+		c.Set(key, with)
+		return c.Render(http.StatusUnprocessableEntity, r.HTML("admin/auth/login.html", AdminAuthLayout))
+	}
+
+	isHuman, err := external.IsHuman(c.Request())
 
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	c.Set("user", user)
 
-	if verrs.HasAny() {
-		c.Set("errors", verrs.Errors)
-		return c.Render(http.StatusUnprocessableEntity, r.HTML("admin/auth/login.html", AdminAuthLayout))
+	if !isHuman {
+
+		vErrs.Add(errKey, T.Translate(c,"verify.human"))
+	}
+
+	if vErrs.HasAny() {
+		return back(errKey, vErrs.Errors)
+	}
+
+
+	vErrs, err = user.ValidateLogin(tx)
+
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	if vErrs.HasAny() {
+		return back("errors", vErrs.Errors)
 	}
 
 	if err := user.Authorize(tx); err != nil {
-		verrs.Add("loginErrors", err.Error())
+		vErrs.Add(errKey, err.Error())
 	}
 
-	if verrs.HasAny() {
-		c.Set("loginErrors", verrs.Errors)
-		return c.Render(http.StatusUnprocessableEntity, r.HTML("admin/auth/login.html", AdminAuthLayout))
+	if vErrs.HasAny() {
+		return back(errKey, vErrs.Errors)
 	}
 	tokenString, err := makeToken(user.ID.String())
 

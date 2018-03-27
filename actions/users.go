@@ -32,7 +32,7 @@ func (v UsersResource) List(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("No transaction found"))
+		return errors.WithStack(errors.New(T.Translate(c, "tx.not.ok")))
 	}
 
 	users := &models.Users{}
@@ -60,7 +60,7 @@ func (v UsersResource) Show(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("No transaction found"))
+		return errors.WithStack(errors.New(T.Translate(c, "tx.not.ok")))
 	}
 
 	// Allocate an empty User
@@ -98,7 +98,7 @@ func (v UsersResource) Create(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("No transaction found"))
+		return errors.WithStack(errors.New(T.Translate(c, "tx.not.ok")))
 	}
 
 	// Validate the data from the html form
@@ -119,7 +119,7 @@ func (v UsersResource) Create(c buffalo.Context) error {
 	}
 
 	// If there are no errors set a success message
-	c.Flash().Add("success", "User was created successfully")
+	c.Flash().Add("success", T.Translate(c, "user.created.success"))
 
 	// and redirect to the users index page
 	return c.Redirect(http.StatusFound, "/admin/users")
@@ -131,7 +131,7 @@ func (v UsersResource) Edit(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("No transaction found"))
+		return errors.WithStack(errors.New(T.Translate(c, "tx.not.ok")))
 	}
 
 	// Allocate an empty User
@@ -152,7 +152,7 @@ func (v UsersResource) Update(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("No transaction found"))
+		return errors.WithStack(errors.New(T.Translate(c, "tx.not.ok")))
 	}
 
 	// Allocate an empty User
@@ -184,7 +184,7 @@ func (v UsersResource) Update(c buffalo.Context) error {
 	}
 
 	// If there are no errors set a success message
-	c.Flash().Add("success", "User was updated successfully")
+	c.Flash().Add("success", T.Translate(c, "user.updated.success"))
 
 	// and redirect to the users index page
 	return c.Redirect(http.StatusFound, "/admin/users")
@@ -196,7 +196,7 @@ func (v UsersResource) Destroy(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("No transaction found"))
+		return errors.WithStack(errors.New(T.Translate(c, "tx.not.ok")))
 	}
 
 	// Allocate an empty User
@@ -212,7 +212,7 @@ func (v UsersResource) Destroy(c buffalo.Context) error {
 	}
 
 	// If there are no errors set a flash message
-	c.Flash().Add("success", "User was destroyed successfully")
+	c.Flash().Add("success", T.Translate(c, "user.destroyed.success"))
 
 	// Redirect to the users index page
 	return c.Redirect(http.StatusFound, "/admin/users")

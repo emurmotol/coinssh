@@ -2,6 +2,7 @@ package actions
 
 import (
 	"github.com/gobuffalo/buffalo/render"
+	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/packr"
 )
 
@@ -28,6 +29,9 @@ func init() {
 			// uncomment for non-Bootstrap form helpers:
 			// "form":     plush.FormHelper,
 			// "form_for": plush.FormForHelper,
+			"env": func(key, value string) string {
+				return envy.Get(key, value)
+			},
 		},
 	})
 }

@@ -1,13 +1,14 @@
 package actions
 
 import (
-	"net/http"
+	"github.com/emurmotol/coinssh/external"
+	"github.com/emurmotol/coinssh/mailers"
 	"github.com/emurmotol/coinssh/models"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
+	"github.com/gobuffalo/validate"
 	"github.com/pkg/errors"
-	"github.com/emurmotol/coinssh/mailers"
-	"fmt"
+	"net/http"
 )
 
 // WebGetLogin default implementation.
@@ -26,7 +27,7 @@ func WebPostLogin(c buffalo.Context) error {
 	tx, ok := c.Value("tx").(*pop.Connection)
 
 	if !ok {
-		return errors.WithStack(errors.New("No transaction found"))
+		return errors.WithStack(errors.New(T.Translate(c, "tx.not.ok")))
 	}
 
 	account := &models.Account{}
@@ -34,26 +35,45 @@ func WebPostLogin(c buffalo.Context) error {
 	if err := c.Bind(account); err != nil {
 		return errors.WithStack(err)
 	}
+	c.Set("account", account)
 
-	verrs, err := account.ValidateLogin(tx)
+	vErrs := validate.NewErrors()
+	errKey := "loginErrors"
+	back := func(key string, with map[string][]string) error {
+		c.Set(key, with)
+		return c.Render(http.StatusUnprocessableEntity, r.HTML("web/auth/login.html", WebAuthLayout))
+	}
+
+	isHuman, err := external.IsHuman(c.Request())
 
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	c.Set("account", account)
 
-	if verrs.HasAny() {
-		c.Set("errors", verrs.Errors)
-		return c.Render(http.StatusUnprocessableEntity, r.HTML("web/auth/login.html", WebAuthLayout))
+	if !isHuman {
+		vErrs.Add(errKey,  T.Translate(c,"verify.human"))
+	}
+
+	if vErrs.HasAny() {
+		return back(errKey, vErrs.Errors)
+	}
+
+	vErrs, err = account.ValidateLogin(tx)
+
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	if vErrs.HasAny() {
+		return back("errors", vErrs.Errors)
 	}
 
 	if err := account.Authorize(tx); err != nil {
-		verrs.Add("loginErrors", err.Error())
+		vErrs.Add(errKey, err.Error())
 	}
 
-	if verrs.HasAny() {
-		c.Set("loginErrors", verrs.Errors)
-		return c.Render(http.StatusUnprocessableEntity, r.HTML("web/auth/login.html", WebAuthLayout))
+	if vErrs.HasAny() {
+		return back(errKey, vErrs.Errors)
 	}
 	tokenString, err := makeToken(account.ID.String())
 
@@ -115,7 +135,7 @@ func WebPostRegister(c buffalo.Context) error {
 	tx, ok := c.Value("tx").(*pop.Connection)
 
 	if !ok {
-		return errors.WithStack(errors.New("No transaction found"))
+		return errors.WithStack(errors.New(T.Translate(c, "tx.not.ok")))
 	}
 
 	// Allocate an empty User
@@ -124,25 +144,46 @@ func WebPostRegister(c buffalo.Context) error {
 	if err := c.Bind(account); err != nil {
 		return errors.WithStack(err)
 	}
+	c.Set("account", account)
 
-	// Validate the data from the html form
-	verrs, err := tx.ValidateAndCreate(account)
+	vErrs := validate.NewErrors()
+	errKey := "registerErrors"
+	back := func(key string, with map[string][]string) error {
+		c.Set(key, with)
+		return c.Render(http.StatusUnprocessableEntity, r.HTML("web/auth/register.html", WebAuthLayout))
+	}
+
+	isHuman, err := external.IsHuman(c.Request())
+
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
-	if verrs.HasAny() {
-		c.Set("account", account)
-		// Make the errors available inside the html template
-		c.Set("errors", verrs.Errors)
-		// Render again the register.html template that the user can
-		// correct the input.
-		return c.Render(http.StatusUnprocessableEntity, r.HTML("web/auth/register.html", WebAuthLayout))
+	if !isHuman {
+		vErrs.Add(errKey,  T.Translate(c,"verify.human"))
+	}
+
+	if vErrs.HasAny() {
+		return back(errKey, vErrs.Errors)
+	}
+
+	// Validate the data from the html form
+	vErrs, err = tx.ValidateAndCreate(account)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	if vErrs.HasAny() {
+		return back("errors", vErrs.Errors)
 	}
 	go mailers.SendRegisterActivation(account)
 
 	// If there are no errors set a success message
-	c.Flash().Add("success", fmt.Sprintf("Hello, %s! We sent you an email. Please activate your account.", account.Name))
+	c.Flash().Add("success", T.Translate(c,"register.activation.sent", account))
 	// and redirect to the home page
 	return c.Redirect(http.StatusFound, "/login")
 }

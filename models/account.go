@@ -7,13 +7,13 @@ import (
 	"database/sql"
 	"strings"
 
+	"github.com/emurmotol/coinssh/external"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
-	"fmt"
 )
 
 type Account struct {
@@ -83,10 +83,9 @@ type AccountEmailIsDisposable struct {
 }
 
 func (v *AccountEmailIsDisposable) IsValid(errors *validate.Errors) {
-	kb := &kickbox{}
-	getJson(fmt.Sprintf("https://open.kickbox.com/v1/disposable/%s", v.Field), kb)
+	yes, _ := external.IsEmailDisposable(v.Field)
 
-	if kb.IsDisposable {
+	if yes {
 		errors.Add(validators.GenerateKey(v.Name), "Disposable email address are not allowed.")
 	}
 }
