@@ -8,7 +8,6 @@ import (
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/pop"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"time"
 )
@@ -32,7 +31,7 @@ func makeToken(id string) (string, error) {
 
 func authenticated(c buffalo.Context, tokenName string) (interface{}, error) {
 	sessionToken := c.Session().Get(tokenName)
-	emptyTokenErr := fmt.Errorf("No token set in session")
+	emptyTokenErr := fmt.Errorf(T.Translate(c, "jwt.token.empty"))
 
 	if sessionToken == nil {
 		return nil, emptyTokenErr
@@ -46,35 +45,32 @@ func authenticated(c buffalo.Context, tokenName string) (interface{}, error) {
 	// Parsing token
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf(T.Translate(c, "jwt.signing.error", token.Header["alg"]))
 		}
 
 		// RSA key
 		mySignedKey, err := ioutil.ReadFile(envy.Get("JWT_KEY_PATH", ""))
 
 		if err != nil {
-			return nil, fmt.Errorf("Could not open jwt key: %v", err)
+			return nil, fmt.Errorf(T.Translate(c, "jwt.open.error", err))
 		}
 
 		return mySignedKey, nil
 	})
 
 	if err != nil {
-		return nil, fmt.Errorf("Could not parse the token: %v", err)
+		return nil, fmt.Errorf(T.Translate(c, "jwt.parse.error", err))
 	}
 
 	// Getting claims
 	claims, ok := token.Claims.(jwt.MapClaims)
 
 	if ok && token.Valid {
-
-		logrus.Errorf("Claims: %v", claims)
-
 		// Get the DB connection from the context
 		tx, ok := c.Value("tx").(*pop.Connection)
 
 		if !ok {
-			return nil, errors.New("No transaction found")
+			return nil, errors.New(T.Translate(c, "tx.not.ok"))
 		}
 		var model interface{}
 
@@ -83,14 +79,14 @@ func authenticated(c buffalo.Context, tokenName string) (interface{}, error) {
 		} else if tokenName == WebTokenName {
 			model = &models.Account{}
 		} else {
-			return nil, fmt.Errorf("Could not identify the %s", tokenName)
+			return nil, fmt.Errorf(T.Translate(c, "jwt.identify.error", tokenName))
 		}
 
 		// Retrieving user from db
 		if err := tx.Find(model, claims["jti"].(string)); err != nil {
-			return nil, fmt.Errorf("Could not identify the %s: %v", tokenName, err)
+			return nil, fmt.Errorf(T.Translate(c, "jwt.model.not.found", err))
 		}
 		return model, nil
 	}
-	return nil, fmt.Errorf("Failed to validate token: %v", claims)
+	return nil, fmt.Errorf(T.Translate(c, "jwt.validate.error", claims))
 }

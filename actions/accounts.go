@@ -33,7 +33,7 @@ func (v AccountsResource) List(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
+		return errors.WithStack(errors.New(T.Translate(c, "tx.not.ok")))
 	}
 
 	accounts := &models.Accounts{}
@@ -59,7 +59,7 @@ func (v AccountsResource) Show(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
+		return errors.WithStack(errors.New(T.Translate(c, "tx.not.ok")))
 	}
 
 	// Allocate an empty Account
@@ -93,7 +93,7 @@ func (v AccountsResource) Create(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
+		return errors.WithStack(errors.New(T.Translate(c, "tx.not.ok")))
 	}
 
 	// Validate the data from the html form
@@ -115,7 +115,7 @@ func (v AccountsResource) Create(c buffalo.Context) error {
 	go mailers.SendRegisterActivation(account)
 
 	// If there are no errors set a success message
-	c.Flash().Add("success", "Account was created successfully")
+	c.Flash().Add("success", T.Translate(c, "account.created.success"))
 
 	// and redirect to the accounts index page
 	return c.Redirect(http.StatusFound, "/register")
@@ -127,7 +127,7 @@ func (v AccountsResource) Edit(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
+		return errors.WithStack(errors.New(T.Translate(c, "tx.not.ok")))
 	}
 
 	// Allocate an empty Account
@@ -146,7 +146,7 @@ func (v AccountsResource) Update(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
+		return errors.WithStack(errors.New(T.Translate(c, "tx.not.ok")))
 	}
 
 	// Allocate an empty Account
@@ -176,7 +176,7 @@ func (v AccountsResource) Update(c buffalo.Context) error {
 	}
 
 	// If there are no errors set a success message
-	c.Flash().Add("success", "Account was updated successfully")
+	c.Flash().Add("success", T.Translate(c, "account.updated.success"))
 
 	// and redirect to the accounts index page
 	return c.Render(200, r.Auto(c, account))
@@ -188,7 +188,7 @@ func (v AccountsResource) Destroy(c buffalo.Context) error {
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
 	if !ok {
-		return errors.WithStack(errors.New("no transaction found"))
+		return errors.WithStack(errors.New(T.Translate(c, "tx.not.ok")))
 	}
 
 	// Allocate an empty Account
@@ -204,7 +204,7 @@ func (v AccountsResource) Destroy(c buffalo.Context) error {
 	}
 
 	// If there are no errors set a flash message
-	c.Flash().Add("success", "Account was destroyed successfully")
+	c.Flash().Add("success", T.Translate(c, "account.destroyed.success"))
 
 	// Redirect to the accounts index page
 	return c.Render(200, r.Auto(c, account))

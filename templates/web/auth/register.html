@@ -1,4 +1,14 @@
 <h4 class="card-title">Register</h4>
+<%= if (registerErrors) { %>
+<%= for (key, val) in registerErrors { %>
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <%= val %>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<% } %>
+<% } %>
 <%= form_for(account, {action: registerPath(), method: "POST"}) { %>
 <%= f.InputTag("Name", {class: "form-control-lg", autofocus: true}) %>
 <%= f.InputTag("Email", {class: "form-control-lg"}) %>
