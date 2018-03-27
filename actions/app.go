@@ -55,7 +55,7 @@ func App() *buffalo.App {
 
 		// Setup and use translations:
 		var err error
-		if T, err = i18n.New(packr.NewBox("../locales"), "en-US"); err != nil {
+		if T, err = i18n.New(packr.NewBox("../locales"), envy.Get("LOCALE", "en-US")); err != nil {
 			app.Stop(err)
 		}
 		app.Use(T.Middleware())

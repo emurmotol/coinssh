@@ -5,6 +5,8 @@ import (
 
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/pop"
+	"github.com/gobuffalo/packr"
+	"github.com/gobuffalo/buffalo/middleware/i18n"
 )
 
 // DB is a connection to your database to be used
