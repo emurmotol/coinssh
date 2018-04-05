@@ -52,6 +52,7 @@ var _ = grift.Namespace("db", func() {
 		for i := 0; i <= 5; i++ {
 			account := &models.Account{
 				Name:     fake.Name(),
+				Username: fake.UserName(),
 				Email:    fake.Email(),
 				Password: "secret123",
 			}

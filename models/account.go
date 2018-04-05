@@ -21,6 +21,7 @@ type Account struct {
 	CreatedAt    time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at" db:"updated_at"`
 	Name         string    `json:"name" db:"name"`
+	Username     string    `json:"username" db:"username"`
 	Email        string    `json:"email" db:"email"`
 	Password     string    `json:"-" db:"-"`
 	PasswordHash string    `json:"-" db:"password_hash"`
@@ -45,9 +46,10 @@ func (a Accounts) String() string {
 // This method is not required and may be deleted.
 func (a *Account) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.Validate(
-		&validators.StringIsPresent{Field: a.Name, Name: "Name"},
+		&validators.StringIsPresent{Field: a.Username, Name: "Username"},
 		&validators.EmailIsPresent{Field: a.Email, Name: "Email"},
 		&validators.StringIsPresent{Field: a.Password, Name: "Password"},
+		&AccountUsernameTaken{Field: a.Username, Name: "Username", tx: tx},
 		&AccountEmailTaken{Field: a.Email, Name: "Email", tx: tx},
 		&AccountEmailIsDisposable{Field: a.Email, Name: "Email", tx: tx},
 	), nil
@@ -73,6 +75,22 @@ func (v *AccountEmailTaken) IsValid(errors *validate.Errors) {
 	if err == nil {
 		// found a account with the same email
 		errors.Add(validators.GenerateKey(v.Name), "Email already taken.")
+	}
+}
+
+type AccountUsernameTaken struct {
+	Field string
+	Name  string
+	tx    *pop.Connection
+}
+
+func (v *AccountUsernameTaken) IsValid(errors *validate.Errors) {
+	q := v.tx.Where("username = ?", v.Field)
+	m := Account{}
+	err := q.First(&m)
+	if err == nil {
+		// found a account with the same email
+		errors.Add(validators.GenerateKey(v.Name), "Username already taken.")
 	}
 }
 
