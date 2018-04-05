@@ -47,6 +47,8 @@ func (a Accounts) String() string {
 func (a *Account) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.Validate(
 		&validators.StringIsPresent{Field: a.Username, Name: "Username"},
+		&validators.StringLengthInRange{Field: a.Username, Name: "Username", Min: 8, Message: "Username must be at least 8 characters."},
+		&validators.StringLengthInRange{Field: a.Password, Name: "Password", Min: 8, Message: "Password must be at least 8 characters."},
 		&validators.EmailIsPresent{Field: a.Email, Name: "Email"},
 		&validators.StringIsPresent{Field: a.Password, Name: "Password"},
 		&AccountUsernameIsTaken{Field: a.Username, Name: "Username", tx: tx},
@@ -89,7 +91,7 @@ func (v *AccountUsernameIsTaken) IsValid(errors *validate.Errors) {
 	m := Account{}
 	err := q.First(&m)
 	if err == nil {
-		// found a account with the same email
+		// found a account with the same username
 		errors.Add(validators.GenerateKey(v.Name), "Username already taken.")
 	}
 }
@@ -128,7 +130,6 @@ func (a *Account) BeforeCreate(tx *pop.Connection) error {
 	if err != nil {
 		return errors.WithStack(err)
 	}
-
 	a.PasswordHash = password
 
 	return nil
@@ -140,7 +141,7 @@ func (a *Account) Authorize(tx *pop.Connection) error {
 
 	if err != nil {
 		if errors.Cause(err) == sql.ErrNoRows {
-			// couldn't find an account with that email address
+			// couldn't find an account with that email or username
 			return errors.New("Couldn't find your account.")
 		}
 		return errors.WithStack(err)

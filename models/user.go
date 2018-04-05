@@ -95,7 +95,6 @@ func (u *User) BeforeCreate(tx *pop.Connection) error {
 	if err != nil {
 		return errors.WithStack(err)
 	}
-
 	u.PasswordHash = password
 
 	return nil
@@ -106,7 +105,7 @@ func (u *User) Authorize(tx *pop.Connection) error {
 
 	if err != nil {
 		if errors.Cause(err) == sql.ErrNoRows {
-			// couldn't find a user with that email address
+			// couldn't find an account with that email or username
 			return errors.New("Couldn't find your account.")
 		}
 		return errors.WithStack(err)
