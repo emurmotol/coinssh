@@ -1,4 +1,4 @@
-<h4 class="card-title">Register</h4>
+<h4 class="card-title"><%= t("register") %></h4>
 <%= if (registerErrors) { %>
 <%= for (key, val) in registerErrors { %>
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -10,16 +10,18 @@
 <% } %>
 <% } %>
 <%= form_for(account, {action: registerPath(), method: "POST"}) { %>
-<%= f.InputTag("Username", {class: "form-control-lg", autofocus: true, placeholder: "Username"}) %>
-<%= f.InputTag("Email", {class: "form-control-lg", placeholder: "Email"}) %>
-<%= f.InputTag("Password", {type: "password", class: "form-control-lg", placeholder: "Password"}) %>
+<%= f.InputTag("Username", {class: "form-control-lg", autofocus: true, label: t("username")}) %>
+<%= f.InputTag("Email", {class: "form-control-lg", label: t("email")}) %>
+<%= f.InputTag("Password", {type: "password", class: "form-control-lg", label: t("password")}) %>
 <div class="form-group">
     <div class="g-recaptcha" data-sitekey='<%= env("RECAPTCHA_SITE_KEY", "") %>'></div>
 </div>
 <div class="form-group no-margin">
-    <button type="submit" class="btn btn-primary btn-lg btn-block" role="button">Register</button>
+    <button type="submit" class="btn btn-primary btn-lg btn-block" role="button">
+        <%= t("register") %>
+    </button>
 </div>
 <div class="margin-top20 text-center">
-    Already have an account? <a href="<%= loginPath() %>">Login</a>
+    <%= t("already.have.an.account") %> <a href="<%= loginPath() %>"><%= t("login") %></a>
 </div>
 <% } %>

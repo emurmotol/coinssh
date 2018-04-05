@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Auth - Coinssh</title>
+    <title><%= t("app.name") %></title>
     <meta name="csrf-param" content="authenticity_token"/>
     <meta name="csrf-token" content="<%= authenticity_token %>"/>
     <link rel="icon" href="<%= assetPath("images/web.ico") %>">
@@ -42,7 +42,7 @@
                     </div>
                 </div>
                 <div class="footer">
-                    Copyright &copy; 2018 &mdash; Coinssh
+                    <%= t("copyright") %> &copy; 2018 &mdash; <%= t("app.name") %>
                 </div>
             </div>
         </div>
