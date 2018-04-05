@@ -10,9 +10,9 @@
 <% } %>
 <% } %>
 <%= form_for(account, {action: registerPath(), method: "POST"}) { %>
-<%= f.InputTag("Username", {class: "form-control-lg", autofocus: true}) %>
-<%= f.InputTag("Email", {class: "form-control-lg"}) %>
-<%= f.InputTag("Password", {type: "password", class: "form-control-lg"}) %>
+<%= f.InputTag("Username", {class: "form-control-lg", autofocus: true, placeholder: "Username"}) %>
+<%= f.InputTag("Email", {class: "form-control-lg", placeholder: "Email"}) %>
+<%= f.InputTag("Password", {type: "password", class: "form-control-lg", placeholder: "Password"}) %>
 <div class="form-group">
     <div class="g-recaptcha" data-sitekey='<%= env("RECAPTCHA_SITE_KEY", "") %>'></div>
 </div>

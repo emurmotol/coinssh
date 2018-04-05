@@ -1,0 +1,3 @@
+add_index("accounts", "username", {
+    "unique": true
+})

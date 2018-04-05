@@ -12,8 +12,8 @@
         <% } %>
         <% } %>
         <%= form_for(user, {action: adminLoginPath(), method: "POST"}) { %>
-        <%= f.InputTag("Email", {class: "form-control-lg", autofocus: true}) %>
-        <%= f.InputTag("Password", {class: "form-control-lg", type: "password"}) %>
+        <%= f.InputTag("Email", {class: "form-control-lg", autofocus: true, placeholder: "Email"}) %>
+        <%= f.InputTag("Password", {class: "form-control-lg", type: "password", placeholder: "Password"}) %>
         <div class="form-group">
             <div class="g-recaptcha" data-sitekey='<%= env("RECAPTCHA_SITE_KEY", "") %>'></div>
         </div>

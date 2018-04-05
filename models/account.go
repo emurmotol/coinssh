@@ -49,26 +49,26 @@ func (a *Account) Validate(tx *pop.Connection) (*validate.Errors, error) {
 		&validators.StringIsPresent{Field: a.Username, Name: "Username"},
 		&validators.EmailIsPresent{Field: a.Email, Name: "Email"},
 		&validators.StringIsPresent{Field: a.Password, Name: "Password"},
-		&AccountUsernameTaken{Field: a.Username, Name: "Username", tx: tx},
-		&AccountEmailTaken{Field: a.Email, Name: "Email", tx: tx},
+		&AccountUsernameIsTaken{Field: a.Username, Name: "Username", tx: tx},
+		&AccountEmailIsTaken{Field: a.Email, Name: "Email", tx: tx},
 		&AccountEmailIsDisposable{Field: a.Email, Name: "Email", tx: tx},
 	), nil
 }
 
 func (a *Account) ValidateLogin(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.Validate(
-		&validators.EmailIsPresent{Field: a.Email, Name: "Email"},
+		&validators.StringIsPresent{Field: a.Username, Name: "Username"},
 		&validators.StringIsPresent{Field: a.Password, Name: "Password"},
 	), nil
 }
 
-type AccountEmailTaken struct {
+type AccountEmailIsTaken struct {
 	Field string
 	Name  string
 	tx    *pop.Connection
 }
 
-func (v *AccountEmailTaken) IsValid(errors *validate.Errors) {
+func (v *AccountEmailIsTaken) IsValid(errors *validate.Errors) {
 	q := v.tx.Where("email = ?", v.Field)
 	m := Account{}
 	err := q.First(&m)
@@ -78,13 +78,13 @@ func (v *AccountEmailTaken) IsValid(errors *validate.Errors) {
 	}
 }
 
-type AccountUsernameTaken struct {
+type AccountUsernameIsTaken struct {
 	Field string
 	Name  string
 	tx    *pop.Connection
 }
 
-func (v *AccountUsernameTaken) IsValid(errors *validate.Errors) {
+func (v *AccountUsernameIsTaken) IsValid(errors *validate.Errors) {
 	q := v.tx.Where("username = ?", v.Field)
 	m := Account{}
 	err := q.First(&m)
@@ -122,6 +122,7 @@ func (a *Account) ValidateUpdate(tx *pop.Connection) (*validate.Errors, error) {
 
 func (a *Account) BeforeCreate(tx *pop.Connection) error {
 	a.Email = strings.ToLower(a.Email)
+	a.Username = strings.ToLower(a.Username)
 	password, err := encryptPassword(a.Password)
 
 	if err != nil {
@@ -134,7 +135,8 @@ func (a *Account) BeforeCreate(tx *pop.Connection) error {
 }
 
 func (a *Account) Authorize(tx *pop.Connection) error {
-	err := tx.Where("email = ?", strings.ToLower(a.Email)).First(a)
+	username := strings.ToLower(a.Username)
+	err := tx.Where("email = ? or username = ?", username, username).First(a)
 
 	if err != nil {
 		if errors.Cause(err) == sql.ErrNoRows {

@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"database/sql"
+	"strings"
+
 	"github.com/emurmotol/coinssh/external"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
@@ -12,7 +14,6 @@ import (
 	"github.com/gobuffalo/validate/validators"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
-	"strings"
 )
 
 type User struct {
@@ -47,7 +48,7 @@ func (u *User) Validate(tx *pop.Connection) (*validate.Errors, error) {
 		&validators.StringIsPresent{Field: u.Name, Name: "Name"},
 		&validators.EmailIsPresent{Field: u.Email, Name: "Email"},
 		&validators.StringIsPresent{Field: u.Password, Name: "Password"},
-		&UserEmailTaken{Field: u.Email, Name: "Email", tx: tx},
+		&UserEmailIsTaken{Field: u.Email, Name: "Email", tx: tx},
 		&UserEmailIsDisposable{Field: u.Email, Name: "Email", tx: tx},
 	), nil
 }
@@ -59,13 +60,13 @@ func (u *User) ValidateLogin(tx *pop.Connection) (*validate.Errors, error) {
 	), nil
 }
 
-type UserEmailTaken struct {
+type UserEmailIsTaken struct {
 	Field string
 	Name  string
 	tx    *pop.Connection
 }
 
-func (v *UserEmailTaken) IsValid(errors *validate.Errors) {
+func (v *UserEmailIsTaken) IsValid(errors *validate.Errors) {
 	q := v.tx.Where("email = ?", v.Field)
 	m := User{}
 	err := q.First(&m)
