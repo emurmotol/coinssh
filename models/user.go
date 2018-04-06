@@ -15,6 +15,8 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/tools/go/gcimporter15/testdata"
+	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/buffalo/middleware/i18n"
 )
 
 type User struct {
@@ -25,7 +27,8 @@ type User struct {
 	Email        string    `json:"email" db:"email"`
 	Password     string    `json:"-" db:"-"`
 	PasswordHash string    `json:"-" db:"password_hash"`
-	Lang         *Lang     `json:"-" db:"-"`
+	C            buffalo.Context  `json:"-" db:"-"`
+	T            *i18n.Translator `json:"-" db:"-"`
 }
 
 // String is not required by pop and may be deleted
@@ -46,7 +49,7 @@ func (u Users) String() string {
 // Validate gets run every time you call a "pop.Validate*" (pop.ValidateAndSave, pop.ValidateAndCreate, pop.ValidateAndUpdate) method.
 // This method is not required and may be deleted.
 func (u *User) Validate(tx *pop.Connection) (*validate.Errors, error) {
-	lang := u.Lang
+	lang := &Lang{C: u.C, T: u.T}
 
 	return validate.Validate(
 		&validators.StringIsPresent{Field: u.Name, Name: "Name"},
@@ -109,9 +112,8 @@ func (u *User) BeforeCreate(tx *pop.Connection) error {
 }
 
 func (u *User) Authorize(tx *pop.Connection) error {
-	lang := u.Lang
-	T := lang.T
-	c := lang.C
+	T := u.T
+	c := u.C
 	err := tx.Where("email = ?", strings.ToLower(u.Email)).First(u)
 
 	if err != nil {

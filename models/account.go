@@ -7,25 +7,27 @@ import (
 	"database/sql"
 	"strings"
 
-	"github.com/emurmotol/coinssh/external"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
 	"github.com/gobuffalo/validate"
 	"github.com/gobuffalo/validate/validators"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
+	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/buffalo/middleware/i18n"
 )
 
 type Account struct {
-	ID           uuid.UUID `json:"id" db:"id"`
-	CreatedAt    time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at" db:"updated_at"`
-	Name         string    `json:"name" db:"name"`
-	Username     string    `json:"username" db:"username"`
-	Email        string    `json:"email" db:"email"`
-	Password     string    `json:"-" db:"-"`
-	PasswordHash string    `json:"-" db:"password_hash"`
-	Lang         *Lang     `json:"-" db:"-"`
+	ID           uuid.UUID        `json:"id" db:"id"`
+	CreatedAt    time.Time        `json:"created_at" db:"created_at"`
+	UpdatedAt    time.Time        `json:"updated_at" db:"updated_at"`
+	Name         string           `json:"name" db:"name"`
+	Username     string           `json:"username" db:"username"`
+	Email        string           `json:"email" db:"email"`
+	Password     string           `json:"-" db:"-"`
+	PasswordHash string           `json:"-" db:"password_hash"`
+	C            buffalo.Context  `json:"-" db:"-"`
+	T            *i18n.Translator `json:"-" db:"-"`
 }
 
 // String is not required by pop and may be deleted
@@ -46,9 +48,9 @@ func (a Accounts) String() string {
 // Validate gets run every time you call a "pop.Validate*" (pop.ValidateAndSave, pop.ValidateAndCreate, pop.ValidateAndUpdate) method.
 // This method is not required and may be deleted.
 func (a *Account) Validate(tx *pop.Connection) (*validate.Errors, error) {
-	lang := a.Lang
-	T := lang.T
-	c := lang.C
+	T := a.T
+	c := a.C
+	lang := &Lang{C: c, T: T}
 
 	return validate.Validate(
 		&validators.StringIsPresent{Field: a.Username, Name: "Username"},
@@ -145,9 +147,8 @@ func (a *Account) BeforeCreate(tx *pop.Connection) error {
 }
 
 func (a *Account) Authorize(tx *pop.Connection) error {
-	lang := a.Lang
-	T := lang.T
-	c := lang.C
+	T := a.T
+	c := a.C
 	username := strings.ToLower(a.Username)
 	err := tx.Where("email = ? or username = ?", username, username).First(a)
 

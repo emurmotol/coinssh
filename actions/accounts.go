@@ -89,6 +89,8 @@ func (v AccountsResource) Create(c buffalo.Context) error {
 	if err := c.Bind(account); err != nil {
 		return errors.WithStack(err)
 	}
+	account.C = c
+	account.T = T
 
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
@@ -160,6 +162,8 @@ func (v AccountsResource) Update(c buffalo.Context) error {
 	if err := c.Bind(account); err != nil {
 		return errors.WithStack(err)
 	}
+	account.C = c
+	account.T = T
 
 	verrs, err := tx.ValidateAndUpdate(account)
 	if err != nil {
