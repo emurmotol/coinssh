@@ -1,11 +1,12 @@
 package external
 
 import (
-	"github.com/gobuffalo/envy"
 	"net"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/gobuffalo/envy"
 )
 
 const (

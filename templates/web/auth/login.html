@@ -1,4 +1,4 @@
-<h4 class="card-title">Login</h4>
+<h4 class="card-title"><%= t("login") %></h4>
 <%= partial("flash.html") %>
 <%= if (loginErrors) { %>
 <%= for (key, val) in loginErrors { %>
@@ -11,15 +11,17 @@
 <% } %>
 <% } %>
 <%= form_for(account, {action: loginPath(), method: "POST"}) { %>
-<%= f.InputTag("Email", {class: "form-control-lg", autofocus: true}) %>
-<%= f.InputTag("Password", {type: "password", class: "form-control-lg"}) %>
+<%= f.InputTag("Username", {class: "form-control-lg", autofocus: true, label: t("username.or.email")}) %>
+<%= f.InputTag("Password", {type: "password", class: "form-control-lg", label: t("password")}) %>
     <div class="form-group">
         <div class="g-recaptcha" data-sitekey='<%= env("RECAPTCHA_SITE_KEY", "") %>'></div>
     </div>
     <div class="form-group no-margin">
-        <button type="submit" class="btn btn-primary btn-lg btn-block" role="button">Login</button>
+        <button type="submit" class="btn btn-primary btn-lg btn-block" role="button">
+            <%= t("login") %>
+        </button>
     </div>
     <div class="margin-top20 text-center">
-        Don't have an account? <a href="<%= registerPath() %>">Register</a>
+        <%= t("dont.have.an.account") %> <a href="<%= registerPath() %>"><%= t("register") %></a>
     </div>
 <% } %>

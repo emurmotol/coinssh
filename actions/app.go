@@ -20,9 +20,9 @@ var app *buffalo.App
 var T *i18n.Translator
 
 const (
-	WebTokenName       = "_web_token"
-	AdminTokenName     = "_admin_token"
-	CoinsshSessionName = "_coinssh_session"
+	WebTokenName   = "_web_token"
+	AdminTokenName = "_admin_token"
+	AppSessionName = "_coinssh_session"
 )
 
 // App is where all routes and middleware for buffalo
@@ -32,7 +32,7 @@ func App() *buffalo.App {
 	if app == nil {
 		app = buffalo.New(buffalo.Options{
 			Env:         ENV,
-			SessionName: CoinsshSessionName,
+			SessionName: AppSessionName,
 		})
 		// Automatically redirect to SSL
 		app.Use(ssl.ForceSSL(secure.Options{
@@ -55,7 +55,7 @@ func App() *buffalo.App {
 
 		// Setup and use translations:
 		var err error
-		if T, err = i18n.New(packr.NewBox("../locales"), "en-US"); err != nil {
+		if T, err = i18n.New(packr.NewBox("../locales"), envy.Get("LOCALE", "en-US")); err != nil {
 			app.Stop(err)
 		}
 		app.Use(T.Middleware())

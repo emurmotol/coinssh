@@ -1,6 +1,8 @@
 package actions
 
 import (
+	"net/http"
+
 	"github.com/emurmotol/coinssh/external"
 	"github.com/emurmotol/coinssh/mailers"
 	"github.com/emurmotol/coinssh/models"
@@ -8,7 +10,6 @@ import (
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/validate"
 	"github.com/pkg/errors"
-	"net/http"
 )
 
 // WebGetLogin default implementation.
@@ -51,7 +52,7 @@ func WebPostLogin(c buffalo.Context) error {
 	}
 
 	if !isHuman {
-		vErrs.Add(errKey,  T.Translate(c,"verify.human"))
+		vErrs.Add(errKey, T.Translate(c, "verify.human"))
 	}
 
 	if vErrs.HasAny() {
@@ -144,6 +145,7 @@ func WebPostRegister(c buffalo.Context) error {
 	if err := c.Bind(account); err != nil {
 		return errors.WithStack(err)
 	}
+	account.Lang = &models.Lang{C: c, T: T}
 	c.Set("account", account)
 
 	vErrs := validate.NewErrors()
@@ -160,7 +162,7 @@ func WebPostRegister(c buffalo.Context) error {
 	}
 
 	if !isHuman {
-		vErrs.Add(errKey,  T.Translate(c,"verify.human"))
+		vErrs.Add(errKey, T.Translate(c, "verify.human"))
 	}
 
 	if vErrs.HasAny() {
@@ -183,7 +185,7 @@ func WebPostRegister(c buffalo.Context) error {
 	go mailers.SendRegisterActivation(account)
 
 	// If there are no errors set a success message
-	c.Flash().Add("success", T.Translate(c,"register.activation.sent", account))
+	c.Flash().Add("success", T.Translate(c, "register.activation.sent", account))
 	// and redirect to the home page
 	return c.Redirect(http.StatusFound, "/login")
 }

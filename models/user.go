@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"database/sql"
+	"strings"
+
 	"github.com/emurmotol/coinssh/external"
 	"github.com/gobuffalo/pop"
 	"github.com/gobuffalo/uuid"
@@ -12,7 +14,7 @@ import (
 	"github.com/gobuffalo/validate/validators"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
-	"strings"
+	"golang.org/x/tools/go/gcimporter15/testdata"
 )
 
 type User struct {
@@ -23,6 +25,7 @@ type User struct {
 	Email        string    `json:"email" db:"email"`
 	Password     string    `json:"-" db:"-"`
 	PasswordHash string    `json:"-" db:"password_hash"`
+	Lang         *Lang     `json:"-" db:"-"`
 }
 
 // String is not required by pop and may be deleted
@@ -43,12 +46,14 @@ func (u Users) String() string {
 // Validate gets run every time you call a "pop.Validate*" (pop.ValidateAndSave, pop.ValidateAndCreate, pop.ValidateAndUpdate) method.
 // This method is not required and may be deleted.
 func (u *User) Validate(tx *pop.Connection) (*validate.Errors, error) {
+	lang := u.Lang
+
 	return validate.Validate(
 		&validators.StringIsPresent{Field: u.Name, Name: "Name"},
 		&validators.EmailIsPresent{Field: u.Email, Name: "Email"},
 		&validators.StringIsPresent{Field: u.Password, Name: "Password"},
-		&UserEmailTaken{Field: u.Email, Name: "Email", tx: tx},
-		&UserEmailIsDisposable{Field: u.Email, Name: "Email", tx: tx},
+		&UserEmailIsTaken{Field: u.Email, Name: "Email", tx: tx, lang: lang},
+		&EmailIsDisposable{Field: u.Email, Name: "Email", tx: tx, lang: lang},
 	), nil
 }
 
@@ -59,19 +64,23 @@ func (u *User) ValidateLogin(tx *pop.Connection) (*validate.Errors, error) {
 	), nil
 }
 
-type UserEmailTaken struct {
+type UserEmailIsTaken struct {
 	Field string
 	Name  string
 	tx    *pop.Connection
+	lang  *Lang
 }
 
-func (v *UserEmailTaken) IsValid(errors *validate.Errors) {
+func (v *UserEmailIsTaken) IsValid(errors *validate.Errors) {
+	lang := v.lang
+	T := lang.T
+	c := lang.C
 	q := v.tx.Where("email = ?", v.Field)
 	m := User{}
 	err := q.First(&m)
 	if err == nil {
 		// found a user with the same email
-		errors.Add(validators.GenerateKey(v.Name), "Email already taken.")
+		errors.Add(validators.GenerateKey(v.Name), T.Translate(c, "email.taken"))
 	}
 }
 
@@ -94,40 +103,28 @@ func (u *User) BeforeCreate(tx *pop.Connection) error {
 	if err != nil {
 		return errors.WithStack(err)
 	}
-
 	u.PasswordHash = password
 
 	return nil
 }
 
 func (u *User) Authorize(tx *pop.Connection) error {
+	lang := u.Lang
+	T := lang.T
+	c := lang.C
 	err := tx.Where("email = ?", strings.ToLower(u.Email)).First(u)
 
 	if err != nil {
 		if errors.Cause(err) == sql.ErrNoRows {
-			// couldn't find a user with that email address
-			return errors.New("Couldn't find your account.")
+			// couldn't find an account with that email or username
+			return errors.New(T.Translate(c, "user.not.found"))
 		}
 		return errors.WithStack(err)
 	}
 	// confirm that the given password matches the hashed password from the db
 	err = bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(u.Password))
 	if err != nil {
-		return errors.New("Wrong password.")
+		return errors.New(T.Translate(c, "wrong.password"))
 	}
 	return nil
-}
-
-type UserEmailIsDisposable struct {
-	Field string
-	Name  string
-	tx    *pop.Connection
-}
-
-func (v *UserEmailIsDisposable) IsValid(errors *validate.Errors) {
-	yes, _ := external.IsEmailDisposable(v.Field)
-
-	if yes {
-		errors.Add(validators.GenerateKey(v.Name), "Disposable email address are not allowed.")
-	}
 }

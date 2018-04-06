@@ -1,13 +1,14 @@
 package actions
 
 import (
+	"net/http"
+
+	"github.com/emurmotol/coinssh/external"
 	"github.com/emurmotol/coinssh/models"
 	"github.com/gobuffalo/buffalo"
 	"github.com/gobuffalo/pop"
-	"github.com/pkg/errors"
-	"net/http"
 	"github.com/gobuffalo/validate"
-	"github.com/emurmotol/coinssh/external"
+	"github.com/pkg/errors"
 )
 
 // AdminGetLogin default implementation.
@@ -50,13 +51,12 @@ func AdminPostLogin(c buffalo.Context) error {
 
 	if !isHuman {
 
-		vErrs.Add(errKey, T.Translate(c,"verify.human"))
+		vErrs.Add(errKey, T.Translate(c, "verify.human"))
 	}
 
 	if vErrs.HasAny() {
 		return back(errKey, vErrs.Errors)
 	}
-
 
 	vErrs, err = user.ValidateLogin(tx)
 

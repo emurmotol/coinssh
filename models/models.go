@@ -5,6 +5,8 @@ import (
 
 	"github.com/gobuffalo/envy"
 	"github.com/gobuffalo/pop"
+	"github.com/gobuffalo/buffalo"
+	"github.com/gobuffalo/buffalo/middleware/i18n"
 )
 
 // DB is a connection to your database to be used
@@ -19,4 +21,9 @@ func init() {
 		log.Fatal(err)
 	}
 	pop.Debug = env == "development"
+}
+
+type Lang struct {
+	C buffalo.Context
+	T *i18n.Translator
 }

@@ -1,3 +1,5 @@
+- id: "tx.not.ok"
+  translation: "No transaction found."
 - id: "jwt.token.empty"
   translation: "No token set in session."
 - id: "jwt.signing.error"
@@ -12,7 +14,3 @@
   translation: "Model not found: {{.}}"
 - id: "jwt.validate.error"
   translation: "Failed to validate token: {{.}}"
-- id: "verify.human"
-  translation: "Please verify you are a human."
-- id: "register.activation.sent"
-  translation: "Hello, {{.Name}}! We sent you an email. Please activate your account."

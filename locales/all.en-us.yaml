@@ -1,5 +1,11 @@
 # For more information on using i18n see: https://github.com/nicksnyder/go-i18n
 - id: "welcome.greeting"
   translation: "Welcome to Buffalo (EN)"
-- id: "tx.not.ok"
-  translation: "No transaction found."
+- id: "already.have.an.account"
+  translation: "Already have an account?"
+- id: "dont.have.an.account"
+  translation: "Don't have an account?"
+- id: "app.name"
+  translation: "Coinssh"
+- id: "copyright"
+  translation: "Copyright"

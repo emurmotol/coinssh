@@ -1,5 +1,5 @@
 <div class="card card-login mx-auto mt-5">
-    <div class="card-header text-center">Coinssh</div>
+    <div class="card-header text-center"><%= t("app.name") %></div>
     <div class="card-body">
         <%= if (loginErrors) { %>
         <%= for (key, val) in loginErrors { %>
@@ -12,12 +12,14 @@
         <% } %>
         <% } %>
         <%= form_for(user, {action: adminLoginPath(), method: "POST"}) { %>
-        <%= f.InputTag("Email", {class: "form-control-lg", autofocus: true}) %>
-        <%= f.InputTag("Password", {class: "form-control-lg", type: "password"}) %>
+        <%= f.InputTag("Email", {class: "form-control-lg", autofocus: true, label: t("email")}) %>
+        <%= f.InputTag("Password", {class: "form-control-lg", type: "password", label: t("password")}) %>
         <div class="form-group">
             <div class="g-recaptcha" data-sitekey='<%= env("RECAPTCHA_SITE_KEY", "") %>'></div>
         </div>
-        <button type="submit" class="btn btn-success btn-lg btn-block" role="button">Login</button>
+        <button type="submit" class="btn btn-success btn-lg btn-block" role="button">
+            <%= t("login") %>
+        </button>
         <% } %>
     </div>
 </div>
