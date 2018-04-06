@@ -145,7 +145,8 @@ func WebPostRegister(c buffalo.Context) error {
 	if err := c.Bind(account); err != nil {
 		return errors.WithStack(err)
 	}
-	account.Lang = &models.Lang{C: c, T: T}
+	account.C = c
+	account.T = T
 	c.Set("account", account)
 
 	vErrs := validate.NewErrors()
