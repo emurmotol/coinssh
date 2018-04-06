@@ -34,6 +34,8 @@ func AdminPostLogin(c buffalo.Context) error {
 	if err := c.Bind(user); err != nil {
 		return errors.WithStack(err)
 	}
+	user.C = c
+	user.T = T
 	c.Set("user", user)
 
 	vErrs := validate.NewErrors()
