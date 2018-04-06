@@ -94,6 +94,7 @@ func (v UsersResource) Create(c buffalo.Context) error {
 	if err := c.Bind(user); err != nil {
 		return errors.WithStack(err)
 	}
+	user.Lang = &models.Lang{C: c, T: T}
 
 	// Get the DB connection from the context
 	tx, ok := c.Value("tx").(*pop.Connection)
@@ -166,6 +167,7 @@ func (v UsersResource) Update(c buffalo.Context) error {
 	if err := c.Bind(user); err != nil {
 		return errors.WithStack(err)
 	}
+	user.Lang = &models.Lang{C: c, T: T}
 
 	verrs, err := tx.ValidateAndUpdate(user)
 	if err != nil {

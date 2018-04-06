@@ -25,6 +25,7 @@ type Account struct {
 	Email        string    `json:"email" db:"email"`
 	Password     string    `json:"-" db:"-"`
 	PasswordHash string    `json:"-" db:"password_hash"`
+	Lang         *Lang     `json:"-" db:"-"`
 }
 
 // String is not required by pop and may be deleted
@@ -45,25 +46,29 @@ func (a Accounts) String() string {
 // Validate gets run every time you call a "pop.Validate*" (pop.ValidateAndSave, pop.ValidateAndCreate, pop.ValidateAndUpdate) method.
 // This method is not required and may be deleted.
 func (a *Account) Validate(tx *pop.Connection) (*validate.Errors, error) {
+	lang := a.Lang
+	T := lang.T
+	c := lang.C
+
 	return validate.Validate(
 		&validators.StringIsPresent{Field: a.Username, Name: "Username"},
 		&validators.StringLengthInRange{
-			Field: a.Username,
-			Name: "Username",
-			Min: 8,
-			Message: "Username must be at least 8 characters.",
+			Field:   a.Username,
+			Name:    "Username",
+			Min:     8,
+			Message: T.Translate(c, "username.char.len", 8),
 		},
 		&validators.StringLengthInRange{
-			Field: a.Password,
-			Name: "Password",
-			Min: 8,
-			Message: "Password must be at least 8 characters.",
+			Field:   a.Password,
+			Name:    "Password",
+			Min:     8,
+			Message: T.Translate(c, "password.char.len", 8),
 		},
 		&validators.EmailIsPresent{Field: a.Email, Name: "Email"},
 		&validators.StringIsPresent{Field: a.Password, Name: "Password"},
-		&AccountUsernameIsTaken{Field: a.Username, Name: "Username", tx: tx},
-		&AccountEmailIsTaken{Field: a.Email, Name: "Email", tx: tx},
-		&AccountEmailIsDisposable{Field: a.Email, Name: "Email", tx: tx},
+		&AccountUsernameIsTaken{Field: a.Username, Name: "Username", tx: tx, lang: lang},
+		&AccountEmailIsTaken{Field: a.Email, Name: "Email", tx: tx, lang: lang},
+		&EmailIsDisposable{Field: a.Email, Name: "Email", tx: tx, lang: lang},
 	), nil
 }
 
@@ -78,15 +83,19 @@ type AccountEmailIsTaken struct {
 	Field string
 	Name  string
 	tx    *pop.Connection
+	lang  *Lang
 }
 
 func (v *AccountEmailIsTaken) IsValid(errors *validate.Errors) {
+	lang := v.lang
+	T := lang.T
+	c := lang.C
 	q := v.tx.Where("email = ?", v.Field)
 	m := Account{}
 	err := q.First(&m)
 	if err == nil {
 		// found a account with the same email
-		errors.Add(validators.GenerateKey(v.Name), "Email already taken.")
+		errors.Add(validators.GenerateKey(v.Name), T.Translate(c, "email.taken"))
 	}
 }
 
@@ -94,29 +103,19 @@ type AccountUsernameIsTaken struct {
 	Field string
 	Name  string
 	tx    *pop.Connection
+	lang  *Lang
 }
 
 func (v *AccountUsernameIsTaken) IsValid(errors *validate.Errors) {
+	lang := v.lang
+	T := lang.T
+	c := lang.C
 	q := v.tx.Where("username = ?", v.Field)
 	m := Account{}
 	err := q.First(&m)
 	if err == nil {
 		// found a account with the same username
-		errors.Add(validators.GenerateKey(v.Name), "Username already taken.")
-	}
-}
-
-type AccountEmailIsDisposable struct {
-	Field string
-	Name  string
-	tx    *pop.Connection
-}
-
-func (v *AccountEmailIsDisposable) IsValid(errors *validate.Errors) {
-	yes, _ := external.IsEmailDisposable(v.Field)
-
-	if yes {
-		errors.Add(validators.GenerateKey(v.Name), "Disposable email address are not allowed.")
+		errors.Add(validators.GenerateKey(v.Name), T.Translate(c, "username.taken"))
 	}
 }
 
@@ -146,20 +145,23 @@ func (a *Account) BeforeCreate(tx *pop.Connection) error {
 }
 
 func (a *Account) Authorize(tx *pop.Connection) error {
+	lang := a.Lang
+	T := lang.T
+	c := lang.C
 	username := strings.ToLower(a.Username)
 	err := tx.Where("email = ? or username = ?", username, username).First(a)
 
 	if err != nil {
 		if errors.Cause(err) == sql.ErrNoRows {
 			// couldn't find an account with that email or username
-			return errors.New("Couldn't find your account.")
+			return errors.New(T.Translate(c, "account.not.found"))
 		}
 		return errors.WithStack(err)
 	}
 	// confirm that the given password matches the hashed password from the db
 	err = bcrypt.CompareHashAndPassword([]byte(a.PasswordHash), []byte(a.Password))
 	if err != nil {
-		return errors.New("Wrong password.")
+		return errors.New(T.Translate(c, "wrong.password"))
 	}
 	return nil
 }
