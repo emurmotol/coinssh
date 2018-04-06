@@ -1,0 +1,6 @@
+- id: "verify.human"
+  translation: "Please verify you are a human."
+- id: "register.activation.sent"
+  translation: "Hello, {{.Username}}! We sent you an email. Please activate your account."
+- id: "email.taken"
+  translation: "Email already taken."

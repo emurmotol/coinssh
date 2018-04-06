@@ -47,8 +47,18 @@ func (a Accounts) String() string {
 func (a *Account) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.Validate(
 		&validators.StringIsPresent{Field: a.Username, Name: "Username"},
-		&validators.StringLengthInRange{Field: a.Username, Name: "Username", Min: 8, Message: "Username must be at least 8 characters."},
-		&validators.StringLengthInRange{Field: a.Password, Name: "Password", Min: 8, Message: "Password must be at least 8 characters."},
+		&validators.StringLengthInRange{
+			Field: a.Username,
+			Name: "Username",
+			Min: 8,
+			Message: "Username must be at least 8 characters.",
+		},
+		&validators.StringLengthInRange{
+			Field: a.Password,
+			Name: "Password",
+			Min: 8,
+			Message: "Password must be at least 8 characters.",
+		},
 		&validators.EmailIsPresent{Field: a.Email, Name: "Email"},
 		&validators.StringIsPresent{Field: a.Password, Name: "Password"},
 		&AccountUsernameIsTaken{Field: a.Username, Name: "Username", tx: tx},
